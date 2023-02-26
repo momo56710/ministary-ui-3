@@ -5,7 +5,7 @@ import { getSession } from '../../../components/utils/auth';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import activities from '../../../assets/data/activities';
-import TagInput from './input';
+
 import {
   Text,
   Input,
@@ -24,7 +24,7 @@ import { useMediaQuery } from '@chakra-ui/react';
 import NavBar from '../../../components/nav';
 import Wilaya from '../../../assets/data/wilaya';
 import { Stack, useColorModeValue } from '@chakra-ui/react';
-import wilaya from '../../../assets/data/wilaya';
+
 export default () => {
   const [isLargerThan800] = useMediaQuery('(min-width: 800px)');
   let [session, setSession] = useState('');

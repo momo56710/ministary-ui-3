@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useCallback, useEffect, useRef } from 'react';
 
 import activities from '../../../assets/data/activities';
-import TagInput from './input';
+import TagInput from '../../assets/input';
 import {
   Text,
   Input,

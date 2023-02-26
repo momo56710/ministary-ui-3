@@ -5,7 +5,7 @@ import { getSession } from '../../../components/utils/auth';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import activities from '../../../assets/data/activities';
-import TagInput from './input';
+import TagInput from '../../assets/input';
 import {
   Text,
   Input,

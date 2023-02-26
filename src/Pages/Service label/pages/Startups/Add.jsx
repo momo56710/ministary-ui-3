@@ -1,8 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useCallback, useEffect } from 'react';
-
 import activities from '../../../assets/data/activities';
-import TagInput from './input';
 import axios from 'axios';
 
 import {
