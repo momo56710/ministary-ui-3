@@ -1,0 +1,31 @@
+export default () => {
+    const activities = [
+        'Fintech',
+        'Cloud/Saas',
+        'Agritech (agriculture de précision)',
+        'Biotechnologie',
+        'Economie circulaire (greentech)',
+        'Logistique et transport',
+        'E-commerce',
+        'E-learning/ Edtech',
+        'Govtech (e-administration)',
+        'Legaltech',
+        'Food tech',
+        'E-health (santé)',
+        'Smart City',
+        'IOT (internet des objets)',
+        'Big data',
+        'Tourisme/voyage',
+        'Energies renouvelables',
+        'Pharma',
+        'Education',
+        'Intelligence Artificielle',
+        'Réalité augmentée/virtuelle',
+        'E-services',
+        'Economie sociale et solidaire.',
+        'Cybersecurity',
+        'Electronique & Composants',
+        'Jeux/loisir',
+      ];
+      return (activities)
+}
