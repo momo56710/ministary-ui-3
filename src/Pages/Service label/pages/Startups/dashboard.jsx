@@ -39,7 +39,10 @@ export default function App() {
       })
       .catch(err => console.log(err));
   }, []);
-
+  useEffect(() => {
+    if (!getSession()?.token) navigate('/login');
+    else setSession(getSession());
+  },[]);
   if (loading) return <h1>Loading ...</h1>;
   return (
     <>

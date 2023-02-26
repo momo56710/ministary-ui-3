@@ -13,6 +13,7 @@ import axios from 'axios';
 function Home() {
   const navigate = useNavigate();
   const [documentPI, setDocumentPI] = useState([]);
+  const [session, setSession] = useState('');
   const [documentST, setDocumentST] = useState([]);
   let [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -31,10 +32,13 @@ function Home() {
       })
       .catch(err => console.log(err));
   }, []);
-
+  useEffect(() => {
+    if (!getSession()?.token) navigate('/login');
+    else setSession(getSession());
+  },[]);
   return (
     <>
-      <NavBar d={'none'} />
+      <NavBar email={session.email} d={'none'} />
       <Grid
         gap={8}
         mx={'4em'}
