@@ -19,6 +19,7 @@ import {
   background,
   color,
   Checkbox,
+  useToast,
 } from '@chakra-ui/react';
 import { useMediaQuery } from '@chakra-ui/react';
 import NavBar from '../../../components/nav';
@@ -37,7 +38,7 @@ export default () => {
   const handleTagsChange = useCallback((event, tags) => {
     setCoFounder(tags);
   }, []);
-
+  const toast = useToast();
   const display = (other, display) => {
     other === 'Autre' || other === 'coFounder'
       ? (display = 'inline')
@@ -427,6 +428,7 @@ export default () => {
                     setPayload({ ...payload, other: e.target.value });
                   }}
                 />
+
                 <Button
                   display={visibale}
                   size={'md'}
@@ -448,6 +450,15 @@ export default () => {
                       if (res.data.success == true) {
                         navigate('/service-label/projet-innovent');
                         console.log('hello');
+                      }
+                      else{
+                        toast({
+                          title: 'probelm',
+                          description: res.data.error,
+                          status: 'error',
+                          duration: 9000,
+                          isClosable: true,
+                        });
                       }
                     } catch (error) {
                       console.log(error);
@@ -476,6 +487,14 @@ export default () => {
                       if (res.data.success == true) {
                         navigate('/service-label/projet-innovent');
                         console.log('hello');
+                      } else {
+                        toast({
+                          title: 'probelm',
+                          description: res.data.error,
+                          status: 'error',
+                          duration: 9000,
+                          isClosable: true,
+                        });
                       }
                     } catch (error) {
                       console.log(error);

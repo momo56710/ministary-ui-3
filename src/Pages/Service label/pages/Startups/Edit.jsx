@@ -19,6 +19,7 @@ import {
   background,
   color,
   Checkbox,
+  useToast,
 } from '@chakra-ui/react';
 import { useMediaQuery } from '@chakra-ui/react';
 import NavBar from '../../../components/nav';
@@ -28,6 +29,7 @@ import { Stack, useColorModeValue } from '@chakra-ui/react';
 export default () => {
   const [isLargerThan800] = useMediaQuery('(min-width: 800px)');
   let [session, setSession] = useState('');
+  const [problem, setProblem] = useState('');
   const text = useColorModeValue('dark', 'light');
   const options = Wilaya();
   const navigate = useNavigate();
@@ -51,7 +53,7 @@ export default () => {
   const [visibale, setVisibale] = useState('none');
   const [serials, setSerials] = useState([]);
   const { _id } = useParams();
-
+  const toast = useToast();
   useEffect(() => {
     session = getSession();
 
@@ -422,8 +424,8 @@ export default () => {
                   Autre
                 </Text>
                 <Input
-                   disabled={editable}
-                   defaultValue={document.other}
+                  disabled={editable}
+                  defaultValue={document.other}
                   onChange={e => {
                     setPayload({ ...payload, other: e.target.value });
                   }}
@@ -448,7 +450,14 @@ export default () => {
                       console.log({ res });
                       if (res.data.success == true) {
                         navigate('/service-label/startups');
-                        console.log('hello');
+                      } else {
+                        toast({
+                          title: 'probelm',
+                          description: res.data.error,
+                          status: 'error',
+                          duration: 9000,
+                          isClosable: true,
+                        });
                       }
                     } catch (error) {
                       console.log(error);
@@ -477,7 +486,7 @@ export default () => {
                       if (res.data.success == true) {
                         navigate('/service-label/startups');
                         console.log('hello');
-                      }
+                      } 
                     } catch (error) {
                       console.log(error);
                     }

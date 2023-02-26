@@ -15,6 +15,7 @@ import {
   Box,
   Center,
   useMediaQuery,
+  useToast,
 } from '@chakra-ui/react';
 import { getSession } from '../../../components/utils/auth';
 import React from 'react';
@@ -29,6 +30,7 @@ export default () => {
   },[]);
    const [isLargerThan800] = useMediaQuery('(min-width: 800px)');
   const [session, setSession] = useState('');
+  const toast = useToast();
   const text = useColorModeValue('dark', 'light');
   const options = Wilaya();
   const navigate = useNavigate();
@@ -386,6 +388,15 @@ export default () => {
                       console.log({ res });
                       if (res.data.success == true){
                         navigate('/service-label/startups')
+                      }
+                      else{
+                        toast({
+                          title: 'probelm',
+                          description: res.data.error,
+                          status: 'error',
+                          duration: 9000,
+                          isClosable: true,
+                        });
                       }
                     } catch (error) {
                       console.log(error);

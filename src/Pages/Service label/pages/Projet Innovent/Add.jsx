@@ -15,6 +15,7 @@ import {
   Center,
   background,
   color,
+  useToast,
 } from '@chakra-ui/react';
 import axios from 'axios'
 import { getSession } from '../../../components/utils/auth';
@@ -25,6 +26,7 @@ import Wilaya from '../../../assets/data/wilaya';
 import { Stack, useColorModeValue } from '@chakra-ui/react';
 
 export default () => {
+  const toast = useToast()
   const [session, setSession] = useState('');
   const [isLargerThan800] = useMediaQuery('(min-width: 800px)');
   const text = useColorModeValue('dark', 'light');
@@ -400,6 +402,15 @@ export default () => {
                       if (res.data.success == true){
                         navigate('/service-label/projet-innovent')
                       }
+                      else{
+                        toast({
+                          title: 'probelm',
+                          description: res.data.error,
+                          status: 'error',
+                          duration: 9000,
+                          isClosable: true,
+                        });
+                       }
                     } catch (error) {
                       console.log(error);
                     }
