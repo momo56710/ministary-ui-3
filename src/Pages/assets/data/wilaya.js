@@ -59,7 +59,7 @@ export default () => {
     {
       id: '8',
       code: '8',
-      name: 'Bechar',
+      name: 'Béchar',
       ar_name: 'بشار',
       longitude: '31.5977602',
       latitude: '-1.8540446',
@@ -91,7 +91,7 @@ export default () => {
     {
       id: '12',
       code: '12',
-      name: 'Tbessa',
+      name: 'Tébessa',
       ar_name: 'تبسة',
       longitude: '35.4117259',
       latitude: '8.110545',
@@ -115,7 +115,7 @@ export default () => {
     {
       id: '15',
       code: '15',
-      name: 'Tizi Ouzou',
+      name: 'Tizi-Ouzou',
       ar_name: 'تيزي وزو',
       longitude: '36.7002068',
       latitude: '4.075957',
@@ -147,7 +147,7 @@ export default () => {
     {
       id: '19',
       code: '19',
-      name: 'Setif',
+      name: 'Sétif',
       ar_name: 'سطيف',
       longitude: '36.1905173',
       latitude: '5.4202134',
@@ -155,7 +155,7 @@ export default () => {
     {
       id: '20',
       code: '20',
-      name: 'Saeda',
+      name: 'Saida',
       ar_name: 'سعيدة',
       longitude: '34.841945',
       latitude: '0.1483583',
@@ -203,7 +203,7 @@ export default () => {
     {
       id: '26',
       code: '26',
-      name: 'Medea',
+      name: 'Médéa',
       ar_name: 'المدية',
       longitude: '36.2838408',
       latitude: '2.7728462',
@@ -355,7 +355,7 @@ export default () => {
     {
       id: '45',
       code: '45',
-      name: 'Naama',
+      name: 'Naâma',
       ar_name: 'النعامة',
       longitude: '33.1995605',
       latitude: '-0.8021968',
@@ -371,7 +371,7 @@ export default () => {
     {
       id: '47',
       code: '47',
-      name: 'Ghardaefa',
+      name: 'Ghardaia',
       ar_name: 'غرداية',
       longitude: '32.5891743',
       latitude: '3.7455655',
