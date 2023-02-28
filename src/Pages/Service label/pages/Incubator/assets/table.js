@@ -72,14 +72,29 @@ export default ({ clients }) => {
                     Voir plus
                   </Button>
                   <Button
-                  onClick={() => {
-                    navigate(`make-pdf/${cli._id}`);
-                  }}
-                  >Download PDF</Button>
+                    onClick={() => {
+                      navigate(`make-pdf/${cli._id}`);
+                    }}
+                  >
+                    Download PDF
+                  </Button>
                 </Center>
               </Td>
 
-             
+              {/* <Th>
+                   <Center>
+                    <Button onClick={() => router('/product/' + product.pid)}>
+                      Edit Here
+                    </Button>
+                    <Button
+                      colorScheme={'whatsapp'}
+                      ml={2}
+                      onClick={() => router('/sell/product/' + product.pid)}
+                    >
+                      Sell Product
+                    </Button> 
+                  </Center> 
+                </Th> */}
             </Tr>
           ))}
         </Tbody>

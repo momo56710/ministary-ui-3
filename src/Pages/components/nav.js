@@ -16,11 +16,11 @@ import {
   MenuDivider,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-import { HamburgerIcon, CloseIcon, AddIcon, InfoIcon } from '@chakra-ui/icons';
+import { HamburgerIcon, CloseIcon, AddIcon } from '@chakra-ui/icons';
 import { ColorModeSwitcher } from '../../ColorModeSwitcher';
 import { removeSession } from './utils/auth';
 const Links = ['Service label', 'Comite de labilisation'];
-const Urls = ['service-label', 'service-label'];
+const Urls = ['service-label', 'comite-de-labilisation'];
 
 export default function WithAction({ email, d, addBtn }) {
   const navigate = useNavigate();
@@ -97,7 +97,12 @@ export default function WithAction({ email, d, addBtn }) {
 
               <MenuList>
                 <MenuItem>{email}</MenuItem>
+               
                 <MenuDivider></MenuDivider>
+                <MenuItem onClick={()=>{
+                  navigate('/add-user')
+                }
+                }>add user</MenuItem>
                 <MenuItem
                   onClick={() => {
                     removeSession();

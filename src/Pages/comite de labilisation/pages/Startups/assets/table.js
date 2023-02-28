@@ -22,7 +22,7 @@ import {
                 <Center>Numero de label</Center>
               </Th>
               <Th>
-                <Center>Année</Center>
+                <Center>Annee</Center>
               </Th>
               <Th>
                 <Center>Nom</Center>
@@ -36,9 +36,6 @@ import {
               </Th>
               <Th>
                 <Center>Actions</Center>
-              </Th>
-              <Th>
-                <Center>Situation</Center>
               </Th>
             </Tr>
           </Thead>
@@ -61,9 +58,6 @@ import {
                   <Center>{cli.state}</Center>
                 </Td>
                 <Td>
-                  <Center>{cli.status}</Center>
-                </Td>
-                <Td>
                   <Center gap={4}>
                     <Button
                       onClick={() => {
@@ -73,9 +67,7 @@ import {
                     >
                       Voir plus
                     </Button>
-                    <Button onClick={() => {
-                        navigate(`make-pdf/${cli._id}`);
-                      }}>Download PDF</Button>
+                    <Button >Download PDF</Button>
                   </Center>
                 </Td>
   

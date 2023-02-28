@@ -11,7 +11,7 @@ import {
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
-import { setSession, getSession } from './components/utils/auth';
+import { getSession } from './components/utils/auth';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useState } from 'react';
@@ -86,7 +86,7 @@ export default function SimpleCard() {
                   <Checkbox
                     onChange={e => {
                       e.target.checked ? setChecked(true) : setChecked(false);
-                      console.log(checked);
+                     
                     }}
                   >
                     Show Password
@@ -101,7 +101,7 @@ export default function SimpleCard() {
                   isLoading={loading}
                   onClick={async () => {
                     const res = await AuthUser(payload);
-                    console.log(res);
+               
                     if (res.sucess) {
                       const { token, email } = res;
                       toast({
@@ -115,9 +115,9 @@ export default function SimpleCard() {
                         'startup_jwt',
                         JSON.stringify({ token, email })
                       );
-                      console.log('Set in Session Storage');
+                      
                       const jwt = sessionStorage.getItem('startup_jwt');
-                      console.log(JSON.parse(jwt));
+                 
                     } else if (!res.sucess || res.error) {
                       toast({
                         title: 'Signing in Failed',

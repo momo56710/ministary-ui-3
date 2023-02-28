@@ -1,9 +1,6 @@
-import React from 'react';
-import axios from 'axios';
-import { useState, useEffect, useCallback } from 'react';
-import { getSession } from '../../../components/utils/auth';
-import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { useState, useCallback, useEffect, useRef } from 'react';
+
 import activities from '../../../assets/data/activities';
 import TagInput from '../../assets/input';
 import {
@@ -18,72 +15,73 @@ import {
   Center,
   background,
   color,
-  Checkbox,
   useToast,
 } from '@chakra-ui/react';
-import { useMediaQuery } from '@chakra-ui/react';
+import axios from 'axios'
+import { getSession } from '../../../components/utils/auth';
 import NavBar from '../../../components/nav';
+import React from 'react';
+import { useMediaQuery } from '@chakra-ui/react';
 import Wilaya from '../../../assets/data/wilaya';
 import { Stack, useColorModeValue } from '@chakra-ui/react';
+
 export default () => {
+  const toast = useToast()
+  const [session, setSession] = useState('');
   const [isLargerThan800] = useMediaQuery('(min-width: 800px)');
-  let [session, setSession] = useState('');
   const text = useColorModeValue('dark', 'light');
   const options = Wilaya();
   const navigate = useNavigate();
+  const [coFounder, setCoFounder] = useState([]);
   const [fileName, setfileName] = useState([]);
   const [otherActivities, setOtherActivities] = useState([]);
   const [coFounders, setCoFounders] = useState([]);
-  const [payload, setPayload] = useState({});
+  const [payload, setPayload] = useState({
+    type: 'PI',
+    num_label: '',
+    year: '',
+    role: 'founder',
+    first_name: '',
+    last_name: '',
+    sex: 'male',
+    email: '',
+    phone: '',
+    website: '',
+    project_name: '',
+    activity: 'Fintech',
+    description: '',
+    presentation: '',
+    advancement: 'Concept/Idée',
+    cv: '',
+    certificate: '',
+    recompense: '',
+    state: 'Adrar',
+    address: '',
+    other: '',
+  });
   const handleTagsChange = useCallback((event, tags) => {
     setCoFounder(tags);
   }, []);
-  const toast = useToast();
+
   const display = (other, display) => {
     other === 'Autre' || other === 'coFounder'
       ? (display = 'inline')
       : (display = 'none');
     return display;
   };
-  const [editable, setEditable] = useState(true);
-  const [loading, setLoading] = useState(true);
-  const [document, setDocument] = useState();
-  const [coFounder, setCoFounder] = useState();
-  const [visibale, setVisibale] = useState('none');
-  const { _id } = useParams();
-
   useEffect(() => {
-    session = getSession();
-
-    axios
-      .get('https://api.stingo.vip/api/document/pi/' + _id, {
-        headers: {
-          Authorization: `Bearer ${session.token}`,
-        },
-      })
-      .then(res => {
-        setDocument(res.data.doc);
-        setLoading(false);
-        setCoFounder([...res.data.doc.coFounders]);
-        setPayload(res.data.doc);
-        setSession(getSession());
-      })
-      // .catch(err => console.log(err));
-  }, []);
-
-  if (loading) {
-    return <h1>Loading ...</h1>;
-  }
+    if (!getSession()?.token) navigate('/login');
+    else setSession(getSession());
+  },[]);
   return (
     <>
-      <NavBar email={session.email} d={'none'}></NavBar>
-      <Box>
-        <Center>
+      <NavBar email={session.email} d={'none'} />
+      <Center>
+        <Box>
           <Box w="80vw" h="100%" borderWidth="1px" borderRadius="lg">
             <Text fontSize="2xl" p={5} textAlign={'center'} fontWeight="bold">
-              Editer Label Projet Innovent
+              Ajouter Label Projet Innovent
             </Text>
-
             <Box
               w="100%"
               h="100%"
@@ -91,19 +89,6 @@ export default () => {
               borderTopRightRadius="lg"
               p={4}
             >
-              <Checkbox
-                mb={8}
-                onChange={e => {
-                  e.target.checked ? setEditable(false) : setEditable(true);
-                  e.target.checked
-                    ? setVisibale('inline')
-                    : setVisibale('none');
-                }}
-              >
-                <Text fontSize="xl" fontWeight="bold">
-                  Edit
-                </Text>
-              </Checkbox>
               <Grid
                 gap={6}
                 templateColumns={isLargerThan800 ? '1fr 3fr' : '1fr'}
@@ -113,8 +98,6 @@ export default () => {
                 </Text>
                 <Input
                   placeholder="20XX"
-                  disabled={editable}
-                  defaultValue={document.year}
                   onChange={e => {
                     setPayload({ ...payload, year: e.target.value });
                   }}
@@ -123,8 +106,6 @@ export default () => {
                   Numero de label
                 </Text>
                 <Input
-                  defaultValue={document.num_label}
-                  disabled={editable}
                   placeholder="XXXXXXXXX"
                   onChange={e => {
                     setPayload({ ...payload, num_label: e.target.value });
@@ -134,8 +115,6 @@ export default () => {
                   Nom/اللقب
                 </Text>
                 <Input
-                  defaultValue={document.last_name}
-                  disabled={editable}
                   placeholder="Nom"
                   type={'text'}
                   onChange={e => {
@@ -146,8 +125,6 @@ export default () => {
                   Prénom /الاسم
                 </Text>
                 <Input
-                  defaultValue={document.first_name}
-                  disabled={editable}
                   placeholder="Prenom"
                   onChange={e => {
                     setPayload({ ...payload, first_name: e.target.value });
@@ -157,8 +134,6 @@ export default () => {
                   Genre
                 </Text>
                 <Select
-                  defaultValue={document.sex}
-                  disabled={editable}
                   placeholder=""
                   onChange={e => {
                     setPayload({ ...payload, sex: e.target.value });
@@ -174,12 +149,11 @@ export default () => {
                 </Text>
                 <Grid gap={5}>
                   <Select
-                    defaultValue={document.role}
-                    disabled={editable}
                     placeholder=""
                     onChange={e => {
                       setPayload({ ...payload, role: e.target.value });
                       setCoFounders(e.target.value);
+                      console.log(coFounders)
                     }}
                   >
                     <option value="founder">fondateur</option>
@@ -187,7 +161,6 @@ export default () => {
                   </Select>
                   <TagInput
                     display={display(coFounders, display)}
-                    disabled={editable}
                     placeholder={'Autres co-fondateurs / المؤسسون الاخرون'}
                     tags={coFounder}
                     colorScheme="teal"
@@ -199,8 +172,6 @@ export default () => {
                 </Text>
 
                 <Input
-                  defaultValue={document.email}
-                  disabled={editable}
                   placeholder="email"
                   onChange={e => {
                     setPayload({ ...payload, email: e.target.value });
@@ -212,8 +183,6 @@ export default () => {
                 </Text>
 
                 <Input
-                  defaultValue={document.phone}
-                  disabled={editable}
                   placeholder="phone"
                   type={'number'}
                   onChange={e => {
@@ -226,8 +195,6 @@ export default () => {
                 </Text>
 
                 <Input
-                  defaultValue={document.website}
-                  disabled={editable}
                   placeholder="mysite"
                   onChange={e => {
                     setPayload({ ...payload, website: e.target.value });
@@ -238,8 +205,6 @@ export default () => {
                   Nom du projet / اسم المشروع
                 </Text>
                 <Input
-                  defaultValue={document.project_name}
-                  disabled={editable}
                   placeholder="name"
                   onChange={e => {
                     setPayload({ ...payload, project_name: e.target.value });
@@ -250,8 +215,6 @@ export default () => {
                 </Text>
                 <Flex gap={4}>
                   <Select
-                    defaultValue={document.activity}
-                    disabled={editable}
                     value={otherActivities}
                     onChange={e => {
                       setPayload({ ...payload, activity: e.target.value });
@@ -264,8 +227,6 @@ export default () => {
                     <option value="Autre">Autre</option>
                   </Select>
                   <Input
-                    defaultValue={document.activity}
-                    disabled={editable}
                     placeholder={otherActivities}
                     display={e => display(otherActivities, display)}
                     onChange={e => {
@@ -277,8 +238,6 @@ export default () => {
                   Description courte du projet/ شرح مختصر للمشروع
                 </Text>
                 <Textarea
-                  defaultValue={document.description}
-                  disabled={editable}
                   placeholder="Description"
                   onChange={e => {
                     setPayload({ ...payload, description: e.target.value });
@@ -289,8 +248,6 @@ export default () => {
                   العرض التفصيلي للمشروع وجوانب الابتكار فيه
                 </Text>
                 <Textarea
-                  defaultValue={document.presentation}
-                  disabled={editable}
                   placeholder="Présentation"
                   onChange={e => {
                     setPayload({ ...payload, presentation: e.target.value });
@@ -300,8 +257,6 @@ export default () => {
                   Avancement du projet / مدى تقدم المشروع
                 </Text>
                 <Select
-                  defaultValue={document.advancement}
-                  disabled={editable}
                   onChange={e => {
                     setPayload({ ...payload, advancement: e.target.value });
                   }}
@@ -320,8 +275,6 @@ export default () => {
                 </Text>
 
                 <Input
-                  defaultValue={document.cv}
-                  disabled={editable}
                   placeholder="link"
                   onChange={e => {
                     setPayload({ ...payload, cv: e.target.value });
@@ -333,8 +286,6 @@ export default () => {
                 </Text>
 
                 <Input
-                  defaultValue={document.certificate}
-                  disabled={editable}
                   placeholder="link"
                   onChange={e => {
                     setPayload({ ...payload, certificate: e.target.value });
@@ -346,8 +297,6 @@ export default () => {
                 </Text>
 
                 <Input
-                  defaultValue={document.recompense}
-                  disabled={editable}
                   placeholder="link"
                   onChange={e => {
                     setPayload({ ...payload, recompense: e.target.value });
@@ -358,8 +307,6 @@ export default () => {
                   Wilaya / الولاية
                 </Text>
                 <Select
-                  disabled={editable}
-                  defaultValue={document.state}
                   onChange={e => {
                     setPayload({ ...payload, state: e.target.value });
                   }}
@@ -376,8 +323,6 @@ export default () => {
                   Adresse / العنوان
                 </Text>
                 <Input
-                  defaultValue={document.address}
-                  disabled={editable}
                   placeholder="Adresse"
                   onChange={e => {
                     setPayload({ ...payload, address: e.target.value });
@@ -386,17 +331,16 @@ export default () => {
                 <Text fontSize="xl" fontWeight="bold">
                   label(PDF)
                 </Text>
-                <Grid templateColumns={'2fr 1fr'} gap={8}>
-                  <Input
-                    type="text"
-                    textAlign={'center'}
-                    readOnly
-                    value={fileName.toString().substring(12, 1000)}
-                  />
+                <Grid
+                  gap={2}
+                  templateColumns={isLargerThan800 ? '1fr 3fr' : '1fr'}
+                >
                   <label
-                    className="css-wqpdoh"
                     for="pdf"
                     style={{
+                      borderRadius: '5px',
+                      padding: '0.5em 0',
+                      border: '1px solid rgba(200,200,200,0.4)',
                       cursor: 'pointer',
                       display: 'grid',
                       alignItems: 'center',
@@ -415,16 +359,17 @@ export default () => {
                       }}
                     />
                   </label>
+                  <Input
+                    type="text"
+                    readOnly
+                    textAlign={'center'}
+                    value={fileName.toString().substring(12, 1000)}
+                  />
                 </Grid>
                 <Text fontSize="xl" fontWeight="bold">
                   situation
                 </Text>
-                <Select
-                defaultValue={document.status}
-                disabled={editable}
-                onChange={(e)=>{
-                  setPayload({ ...payload, status: e.target.value });
-                }}>
+                <Select>
                   <option value="admis">admis</option>
                   <option value="pas admis">pas admis</option>
                   <option value="en attend">en attend</option>
@@ -432,99 +377,53 @@ export default () => {
                 <Text fontSize="xl" fontWeight="bold">
                   Autre
                 </Text>
-              
                 <Input
-                  defaultValue={document.other}
-                  disabled={editable}
                   placeholder=""
                   onChange={e => {
                     setPayload({ ...payload, other: e.target.value });
                   }}
                 />
+                <Button
+                  variant={'solid'}
+                  colorScheme={'teal'}
+                  size={'md'}
+                  // onClick={async () => {
+                  //   try {
+                   
+                  //     const res = await axios.post(
+                  //       "https://api.stingo.vip/api/create",
+                  //       { ...payload, coFounders: coFounder },
+                  //       {
+                  //         headers: {
+                  //           Authorization: `Bearer ${session.token}`,
+                  //         },
+                  //       }
+                  //     );
+                     
+                  //     if (res.data.success == true){
+                  //       navigate('/service-label/projet-innovent')
+                  //     }
+                  //     else{
+                  //       toast({
+                  //         title: 'probelm',
+                  //         description: res.data.error,
+                  //         status: 'error',
+                  //         duration: 9000,
+                  //         isClosable: true,
+                  //       });
+                  //      }
+                  //   } catch (error) {
+                      
+                  //   }
+                  // }}
+                 
+                >
+                  Add
+                </Button>
 
                 <Button
-                colorScheme='pink'
-                  display={visibale}
-                  size={'md'}
-                  onClick={async () => {
-                    const s = { ...payload ,coFounders : coFounder};
-                    delete s.__v;
-                    try {
-                      // console.log({ ...payload, coFondateur: coFounder });
-                      const res = await axios.post(
-                        'https://api.stingo.vip/api/update',
-                        s,
-                        {
-                          headers: {
-                            Authorization: `Bearer ${session.token}`,
-                          },
-                        }
-                      );
-                      // console.log({ res });
-                      if (res.data.success == true) {
-                        navigate('/service-label/projet-innovent');
-                        // console.log('hello');
-                      }
-                      else{
-                        toast({
-                          title: 'probelm',
-                          description: res.data.error,
-                          status: 'error',
-                          duration: 9000,
-                          isClosable: true,
-                        });
-                      }
-                    } catch (error) {
-                      // console.log(error);
-                    }
-                  }}
-                >
-                  Edit
-                </Button>
-                <Button
-                colorScheme='pink'
-                  display={visibale}
-                  size={'md'}
-                  onClick={async () => {
-                    try {
-                      // console.log({ ...payload, coFondateur: coFounder });
-                      const res = await axios.post(
-                        'https://api.stingo.vip/api/delete',
-                        { type: document.type, _id: document._id },
-                        {
-                          headers: {
-                            Authorization: `Bearer ${session.token}`,
-                          },
-                        }
-                      );
-                      // console.log({ res });
-                      // console.log(res.data.success);
-                      if (res.data.success == true) {
-                        navigate('/service-label/projet-innovent');
-                        // console.log('hello');
-                      } else {
-                        toast({
-                          title: 'probelm',
-                          description: res.data.error,
-                          status: 'error',
-                          duration: 9000,
-                          isClosable: true,
-                        });
-                      }
-                    } catch (error) {
-                      // console.log(error);
-                    }
-                  }}
-                >
-                  delete
-                </Button>
-                <Button colorScheme='teal'
-                  onClick={() => {
-                    navigate(`/service-label/projet-innovent/make-pdf/${_id}`);
-                  }}>Download PDF</Button>
-                <Button
-                colorScheme='teal'
                   onClick={() => navigate('/service-label/projet-innovent')}
+                  variant={'solid'}
                   size={'md'}
                 >
                   Return To Manager
@@ -532,8 +431,8 @@ export default () => {
               </Grid>
             </Box>
           </Box>
-        </Center>
-      </Box>
+        </Box>
+      </Center>
     </>
   );
 };

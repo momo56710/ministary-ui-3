@@ -52,28 +52,28 @@ export default () => {
   const [visibale, setVisibale] = useState('none');
   const { _id } = useParams();
 
-  useEffect(() => {
-    session = getSession();
+  // useEffect(() => {
+  //   session = getSession();
 
-    axios
-      .get('https://api.stingo.vip/api/document/pi/' + _id, {
-        headers: {
-          Authorization: `Bearer ${session.token}`,
-        },
-      })
-      .then(res => {
-        setDocument(res.data.doc);
-        setLoading(false);
-        setCoFounder([...res.data.doc.coFounders]);
-        setPayload(res.data.doc);
-        setSession(getSession());
-      })
-      // .catch(err => console.log(err));
-  }, []);
+  //   axios
+  //     .get('https://api.stingo.vip/api/document/pi/' + _id, {
+  //       headers: {
+  //         Authorization: `Bearer ${session.token}`,
+  //       },
+  //     })
+  //     .then(res => {
+  //       setDocument(res.data.doc);
+  //       setLoading(false);
+  //       setCoFounder([...res.data.doc.coFounders]);
+  //       setPayload(res.data.doc);
+  //       setSession(getSession());
+  //     })
+  //     // .catch(err => console.log(err));
+  // }, []);
 
-  if (loading) {
-    return <h1>Loading ...</h1>;
-  }
+  // if (loading) {
+  //   return <h1>Loading ...</h1>;
+  // }
   return (
     <>
       <NavBar email={session.email} d={'none'}></NavBar>
@@ -359,7 +359,6 @@ export default () => {
                 </Text>
                 <Select
                   disabled={editable}
-                  defaultValue={document.state}
                   onChange={e => {
                     setPayload({ ...payload, state: e.target.value });
                   }}
@@ -416,23 +415,10 @@ export default () => {
                     />
                   </label>
                 </Grid>
-                <Text fontSize="xl" fontWeight="bold">
-                  situation
-                </Text>
-                <Select
-                defaultValue={document.status}
-                disabled={editable}
-                onChange={(e)=>{
-                  setPayload({ ...payload, status: e.target.value });
-                }}>
-                  <option value="admis">admis</option>
-                  <option value="pas admis">pas admis</option>
-                  <option value="en attend">en attend</option>
-                </Select>
+
                 <Text fontSize="xl" fontWeight="bold">
                   Autre
                 </Text>
-              
                 <Input
                   defaultValue={document.other}
                   disabled={editable}
@@ -443,87 +429,81 @@ export default () => {
                 />
 
                 <Button
-                colorScheme='pink'
                   display={visibale}
                   size={'md'}
-                  onClick={async () => {
-                    const s = { ...payload ,coFounders : coFounder};
-                    delete s.__v;
-                    try {
-                      // console.log({ ...payload, coFondateur: coFounder });
-                      const res = await axios.post(
-                        'https://api.stingo.vip/api/update',
-                        s,
-                        {
-                          headers: {
-                            Authorization: `Bearer ${session.token}`,
-                          },
-                        }
-                      );
-                      // console.log({ res });
-                      if (res.data.success == true) {
-                        navigate('/service-label/projet-innovent');
-                        // console.log('hello');
-                      }
-                      else{
-                        toast({
-                          title: 'probelm',
-                          description: res.data.error,
-                          status: 'error',
-                          duration: 9000,
-                          isClosable: true,
-                        });
-                      }
-                    } catch (error) {
-                      // console.log(error);
-                    }
-                  }}
+                  // onClick={async () => {
+                  //   const s = { ...payload };
+                  //   delete s.__v;
+                  //   try {
+                  //     // console.log({ ...payload, coFondateur: coFounder });
+                  //     const res = await axios.post(
+                  //       'https://api.stingo.vip/api/update',
+                  //       s,
+                  //       {
+                  //         headers: {
+                  //           Authorization: `Bearer ${session.token}`,
+                  //         },
+                  //       }
+                  //     );
+                  //     // console.log({ res });
+                  //     if (res.data.success == true) {
+                  //       navigate('/service-label/projet-innovent');
+                  //       // console.log('hello');
+                  //     }
+                  //     else{
+                  //       toast({
+                  //         title: 'probelm',
+                  //         description: res.data.error,
+                  //         status: 'error',
+                  //         duration: 9000,
+                  //         isClosable: true,
+                  //       });
+                  //     }
+                  //   } catch (error) {
+                  //     // console.log(error);
+                  //   }
+                  // }}
                 >
                   Edit
                 </Button>
                 <Button
-                colorScheme='pink'
                   display={visibale}
                   size={'md'}
-                  onClick={async () => {
-                    try {
-                      // console.log({ ...payload, coFondateur: coFounder });
-                      const res = await axios.post(
-                        'https://api.stingo.vip/api/delete',
-                        { type: document.type, _id: document._id },
-                        {
-                          headers: {
-                            Authorization: `Bearer ${session.token}`,
-                          },
-                        }
-                      );
-                      // console.log({ res });
-                      // console.log(res.data.success);
-                      if (res.data.success == true) {
-                        navigate('/service-label/projet-innovent');
-                        // console.log('hello');
-                      } else {
-                        toast({
-                          title: 'probelm',
-                          description: res.data.error,
-                          status: 'error',
-                          duration: 9000,
-                          isClosable: true,
-                        });
-                      }
-                    } catch (error) {
-                      // console.log(error);
-                    }
-                  }}
+                  // onClick={async () => {
+                  //   try {
+                  //     // console.log({ ...payload, coFondateur: coFounder });
+                  //     const res = await axios.post(
+                  //       'https://api.stingo.vip/api/delete',
+                  //       { type: document.type, _id: document._id },
+                  //       {
+                  //         headers: {
+                  //           Authorization: `Bearer ${session.token}`,
+                  //         },
+                  //       }
+                  //     );
+                  //     // console.log({ res });
+                  //     // console.log(res.data.success);
+                  //     if (res.data.success == true) {
+                  //       navigate('/service-label/projet-innovent');
+                  //       // console.log('hello');
+                  //     } else {
+                  //       toast({
+                  //         title: 'probelm',
+                  //         description: res.data.error,
+                  //         status: 'error',
+                  //         duration: 9000,
+                  //         isClosable: true,
+                  //       });
+                  //     }
+                  //   } catch (error) {
+                  //     // console.log(error);
+                  //   }
+                  // }}
                 >
                   delete
                 </Button>
-                <Button colorScheme='teal'
-                  onClick={() => {
-                    navigate(`/service-label/projet-innovent/make-pdf/${_id}`);
-                  }}>Download PDF</Button>
+                <Button colorScheme={'red'}>Download PDF</Button>
                 <Button
-                colorScheme='teal'
                   onClick={() => navigate('/service-label/projet-innovent')}
                   size={'md'}
                 >

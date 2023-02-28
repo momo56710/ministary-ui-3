@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useCallback, useEffect } from 'react';
 import activities from '../../../assets/data/activities';
 import axios from 'axios';
-
+import TagInput from '../../assets/input';
 import {
   Text,
   Input,
@@ -24,63 +24,67 @@ export default () => {
   useEffect(() => {
     if (!getSession()?.token) navigate('/login');
     else setSession(getSession());
-  },[]);
-   const [isLargerThan800] = useMediaQuery('(min-width: 800px)');
+  }, []);
+  const [isLargerThan800] = useMediaQuery('(min-width: 800px)');
   const [session, setSession] = useState('');
   const toast = useToast();
   const options = Wilaya();
   const navigate = useNavigate();
-  const [serials, setSerials] = useState([]);
+  const [coFounders, setCoFounders] = useState([]);
+  const [coFounder, setCoFounder] = useState([]);
+  const [incubed, setIncubed] = useState([]);
   const [fileName, setfileName] = useState([]);
-  const [otherActivities, setOtherActivities] = useState([]);
+  const [tools, setTools] = useState([]);
   const [payload, setPayload] = useState({
-    type: 'ST',
+    type: 'IN',
     num_label: '',
     year: '',
-    creation_date: '',
+    incubator_name: '',
+    description: '',
+    services: '',
+    status : 'admis',
+    plan: '',
+    presentation: '',
+    incubed_st: '',
+    cv: '',
     num_employees: '',
+    juridic_status: '',
     first_name: '',
     last_name: '',
     sex: 'male',
-    qualifications: '',
-    status : 'admis',
-    email: '',
-    phone: '',
-    startup_name: '',
-    activity: 'Fintech',
-    description: '',
-    juridic_status: '',
-    nif: '',
-    presentation: '',
-    register: '',
-    advancement: 'Concept/Idée',
-    certificate: '',
-    recompense: '',
     state: 'adrar',
     address: '',
-    result: '',
+    email: '',
+    phone: '',
+    creation_date: '',
+    nif: '',
+    register: '',
+    social_status: '',
+    agreement: '',
     other: '',
   });
-  const handleTagsChange = useCallback((event, tags) => {
-    setSerials(tags);
+  const handleTools = useCallback((event, tags) => {
+    setTools(tags);
   }, []);
-
   const display = (other, display) => {
-    other === 'Autre' ? (display = 'inline') : (display = 'none');
+    other === 'Autre' || other === 'coFounder'
+      ? (display = 'inline')
+      : (display = 'none');
     return display;
   };
+
   useEffect(() => {
     if (!getSession()?.token) navigate('/login');
     else setSession(getSession());
-  },[]);
+  }, []);
   return (
     <>
-      <NavBar email={session.email} d={'none'}/>
-      <Box>
-        <Center>
+      <NavBar email={session.email} d={'none'} />
+      <Center>
+        <Box>
           <Box w="80vw" h="100%" borderWidth="1px" borderRadius="lg">
             <Text fontSize="2xl" p={5} textAlign={'center'} fontWeight="bold">
-              Ajouter Label Startup
+              Ajouter Label incubateur
             </Text>
             <Box
               w="100%"
@@ -89,7 +93,7 @@ export default () => {
               borderTopRightRadius="lg"
               p={4}
             >
-               <Grid
+              <Grid
                 gap={6}
                 templateColumns={isLargerThan800 ? '1fr 3fr' : '1fr'}
               >
@@ -97,7 +101,6 @@ export default () => {
                   Année
                 </Text>
                 <Input
-                  type={'number'}
                   placeholder="20XX"
                   onChange={e => {
                     setPayload({ ...payload, year: e.target.value });
@@ -113,17 +116,16 @@ export default () => {
                   }}
                 />
                 <Text fontSize="xl" fontWeight="bold">
-                  Dénomination commerciale / الاسم التجاري
+                  Nom de l'incubateur / اسم الحاضنة
                 </Text>
                 <Input
-                  placeholder="Dénomination commerciale"
-                  type={'text'}
+                  placeholder="Nom de l'incubateur"
                   onChange={e => {
-                    setPayload({ ...payload, startup_name: e.target.value });
+                    setPayload({ ...payload, incubator_name: e.target.value });
                   }}
                 />
                 <Text fontSize="xl" fontWeight="bold">
-                  Description courte du projet/ شرح مختصر للمشروع
+                  Description courte de l'incubateur / وصف موجز للحاضنة
                 </Text>
                 <Textarea
                   placeholder="Description"
@@ -132,107 +134,55 @@ export default () => {
                   }}
                 />
                 <Text fontSize="xl" fontWeight="bold">
-                  Secteur d'activité / مجال العمل
+                  List des équipements et des services / قائمة المعدات والخدمات
                 </Text>
-                <Flex gap={4}>
-                  <Select
-                    value={otherActivities}
-                    onChange={e => {
-                      setPayload({ ...payload, activity: e.target.value });
-                      setOtherActivities(e.target.value);
-                    }}
-                  >
-                    {activities().map((val, i) => {
-                      return <option value={val}>{`${val}`}</option>;
-                    })}
-                    <option value="Autre">Autre</option>
-                  </Select>
-                  <Input
-                    onChange={e => {
-                      setPayload({ ...payload, activity: e.target.value });
-                    }}
-                    placeholder={otherActivities}
-                    display={e => display(otherActivities, display)}
-                  ></Input>
-                </Flex>
+                <TagInput
+                  placeholder={'List des équipements et des services'}
+                  tags={tools}
+                  colorScheme="teal"
+                  onTagsChange={handleTools}
+                />
                 <Text fontSize="xl" fontWeight="bold">
-                  Avancement du projet / مدى تقدم المشروع
+                  le plan d'aménagement de l'incubateur / المساحات المستعملة
                 </Text>
-                <Select
+                <Textarea
+                  placeholder="Description"
                   onChange={e => {
-                    setPayload({ ...payload, advancement: e.target.value });
-                  }}
-                >
-                  <option value={'Concept/Idée'}>Concept/Idée</option>
-                  <option value={'Prototype en dévloppement'}>
-                    Prototype en dévloppement
-                  </option>
-                  <option value={'Prototype prét'}>Prototype prét</option>
-                  <option value={'Produit sur le marché'}>
-                    Produit sur le marché
-                  </option>
-                </Select>
-                <Text fontSize="xl" fontWeight="bold">
-                  Les qualifications scientifiques et techniques des fondateurs
-                  / المؤهلات العلمية والفنية للمؤسسين
-                </Text>
-
-                <Input
-                  className="fileInput"
-                  placeholder="qualifications scientifiques et techniques"
-                  onChange={e => {
-                    setPayload({
-                      ...payload,
-                      qualifications: e.target.value,
-                    });
+                    setPayload({ ...payload, plan: e.target.value });
                   }}
                 />
-
                 <Text fontSize="xl" fontWeight="bold">
-                  Business Plan et présentation de la startup /خطة العمل وعرض
-                  الشركة الناشئة
+                  Présentation du programme d'incubation / برنامج الحضانة
                 </Text>
-
-                <Input
-                  placeholder="Plan et présentation de la startup"
+                <Textarea
+                  placeholder="Présentation"
                   onChange={e => {
                     setPayload({ ...payload, presentation: e.target.value });
                   }}
                 />
-
                 <Text fontSize="xl" fontWeight="bold">
-                  Brevet (si il y en a) / براءة الاختراع ان وجدت
+                  Liste des statups incubées (si il y en a) / قائمة الشركات
+                  الناشئة المحتضنة (إن وجدت)
+                </Text>
+                <TagInput
+                  placeholder={'Liste des statups incubées'}
+                  tags={incubed}
+                  colorScheme="teal"
+                  onTagsChange={useCallback((event, tags) => {
+                    setIncubed(tags);
+                  }, [])}
+                />
+                <Text fontSize="xl" fontWeight="bold">
+                  CV des fondateurs, et/ou formateurs / السير الذاتية للمؤسسين و
+                  / أو المدربين
                 </Text>
 
                 <Input
-                  placeholder="Brevet"
+                  placeholder="link"
                   onChange={e => {
-                    setPayload({ ...payload, certificate: e.target.value });
+                    setPayload({ ...payload, cv: e.target.value });
                   }}
                 />
-
-                <Text fontSize="xl" fontWeight="bold">
-                  Concours/récompenses / الجوائز و المسابقات
-                </Text>
-
-                <Input
-                  placeholder="récompenses"
-                  onChange={e => {
-                    setPayload({ ...payload, recompense: e.target.value });
-                  }}
-                />
-
-                <Text fontSize="xl" fontWeight="bold">
-                  Copie du registre de commerce / نسخة من السجل التجاري
-                </Text>
-
-                <Input
-                  placeholder="registre de commerce"
-                  onChange={e => {
-                    setPayload({ ...payload, register: e.target.value });
-                  }}
-                />
-
                 <Text fontSize="xl" fontWeight="bold">
                   Nombre d'employés / عدد العمال
                 </Text>
@@ -241,15 +191,6 @@ export default () => {
                   placeholder="XX"
                   onChange={e => {
                     setPayload({ ...payload, num_employees: e.target.value });
-                  }}
-                />
-                <Text fontSize="xl" fontWeight="bold">
-                  Date de création / تاريخ الانشاء
-                </Text>
-                <Input
-                  type={'date'}
-                  onChange={e => {
-                    setPayload({ ...payload, creation_date: e.target.value });
                   }}
                 />
                 <Text fontSize="xl" fontWeight="bold">
@@ -280,29 +221,31 @@ export default () => {
                     setPayload({ ...payload, sex: e.target.value });
                   }}
                 >
-                  <option value="male">Homme</option>
+                  <option value="male" selected>
+                    Homme
+                  </option>
                   <option value="female">femme</option>
                 </Select>
                 <Text fontSize="xl" fontWeight="bold">
-                  E-mail / البريد الالكتروني
+                Autres co-fondateurs / المؤسسون الاخرون
                 </Text>
-
-                <Input
-                  placeholder="email"
-                  onChange={e => {
-                    setPayload({ ...payload, email: e.target.value });
-                  }}
-                />
-
+                  <TagInput
+                
+                    placeholder={'Autres co-fondateurs / المؤسسون الاخرون'}
+                    tags={coFounder}
+                    colorScheme="teal"
+                    onTagsChange={useCallback((event, tags) => {
+                      setCoFounder(tags);
+                    }, [])}
+                  />
+             
                 <Text fontSize="xl" fontWeight="bold">
-                  Téléphone / الهاتف
+                  Forme juridique/ الشكل القانوني
                 </Text>
-
                 <Input
-                  placeholder="phone"
-                  type={'number'}
+                  placeholder="Forme juridique"
                   onChange={e => {
-                    setPayload({ ...payload, phone: e.target.value });
+                    setPayload({ ...payload, juridic_status: e.target.value });
                   }}
                 />
 
@@ -332,12 +275,34 @@ export default () => {
                   }}
                 />
                 <Text fontSize="xl" fontWeight="bold">
-                  Forme juridique/ الشكل القانوني
+                  E-mail / البريد الالكتروني
+                </Text>
+
+                <Input
+                  placeholder="email"
+                  onChange={e => {
+                    setPayload({ ...payload, email: e.target.value });
+                  }}
+                />
+
+                <Text fontSize="xl" fontWeight="bold">
+                  Téléphone / الهاتف
+                </Text>
+
+                <Input
+                  placeholder="phone"
+                  type={'number'}
+                  onChange={e => {
+                    setPayload({ ...payload, phone: e.target.value });
+                  }}
+                />
+                <Text fontSize="xl" fontWeight="bold">
+                  Date de création / تاريخ الانشاء
                 </Text>
                 <Input
-                  placeholder="Forme juridique"
+                  type={'date'}
                   onChange={e => {
-                    setPayload({ ...payload, juridic_status: e.target.value });
+                    setPayload({ ...payload, creation_date: e.target.value });
                   }}
                 />
                 <Text fontSize="xl" fontWeight="bold">
@@ -350,15 +315,36 @@ export default () => {
                   }}
                 />
                 <Text fontSize="xl" fontWeight="bold">
-                  Resultat
+                  Copie du registre de commerce / نسخة من السجل التجاري
                 </Text>
+
                 <Input
-                  placeholder="resultat"
+                  placeholder="link"
                   onChange={e => {
-                    setPayload({ ...payload, result: e.target.value });
+                    setPayload({ ...payload, register: e.target.value });
                   }}
                 />
-                 <Text fontSize="xl" fontWeight="bold">
+                <Text fontSize="xl" fontWeight="bold">
+                  Copie des statuts de la societé / القـانون الأسـاسي لشـركة
+                </Text>
+
+                <Input
+                  placeholder="link"
+                  onChange={e => {
+                    setPayload({ ...payload, social_status: e.target.value });
+                  }}
+                />
+                <Text fontSize="xl" fontWeight="bold">
+                  Agrément de l'association/fondation
+                </Text>
+
+                <Input
+                  placeholder="link"
+                  onChange={e => {
+                    setPayload({ ...payload, agreement: e.target.value });
+                  }}
+                />
+                <Text fontSize="xl" fontWeight="bold">
                   label(PDF)
                 </Text>
                 <Grid
@@ -400,6 +386,7 @@ export default () => {
                   situation
                 </Text>
                 <Select
+              
                 onChange={(e)=>{
                   setPayload({ ...payload, status: e.target.value });
                 }}>
@@ -421,39 +408,42 @@ export default () => {
                   size={'md'}
                   onClick={async () => {
                     try {
-                      // console.log({ ...payload });
                       const res = await axios.post(
-                        "https://api.stingo.vip/api/create",
-                        { ...payload },
+                        'https://api.stingo.vip/api/create',
+                        {
+                          ...payload,
+                          coFounders: coFounder,
+                          services: tools,
+                          incubed_st: incubed,
+                        },
                         {
                           headers: {
                             Authorization: `Bearer ${session.token}`,
                           },
                         }
                       );
-                      // console.log({ res });
-                      if (res.data.success == true){
-                        navigate('/service-label/startups')
-                      }
-                      else{
+
+                      if (res.data.success == true) {
+                        navigate('/service-label/incubateur');
+                      } else {
                         toast({
-                          title: 'probelm',
+                          title: 'problem creating',
                           description: res.data.error,
                           status: 'error',
                           duration: 9000,
                           isClosable: true,
                         });
+                        
                       }
-                    } catch (error) {
-                      // console.log(error);
-                    }
+                    } catch (error) {}
                   }}
                 >
                   Add
                 </Button>
+
                 <Button
-                colorScheme='teal'
-                  onClick={() => navigate('/service-label/startups')}
+                colorScheme={'teal'}
+                  onClick={() => navigate('/service-label/incubateur')}
                   variant={'solid'}
                   size={'md'}
                 >
@@ -462,31 +452,8 @@ export default () => {
               </Grid>
             </Box>
           </Box>
-        </Center>
-      </Box>
+        </Box>
+      </Center>
     </>
   );
 };
-// Annee
-// Numero de label
-// Dénomination commerciale / الاسم التجاري
-// Description courte du projet/ شرح مختصر للمشروع
-// Secteur d'activité / مجال العمل
-// Avancement du projet / مدى تقدم المشروع
-// Les qualifications scientifiques et techniques des fondateurs / المؤهلات العلمية والفنية للمؤسسين
-// Business Plan et présentation de la startup /خطة العمل وعرض الشركة الناشئة
-// Brevet (si il y en a) / براءة الاختراع ان وجدت
-// Concours/récompenses /  الجوائز و المسابقات
-// Copie du registre de commerce / نسخة من السجل التجاري
-// Nombre d'employés / عدد العمال
-// Date de création / تاريخ الانشاء
-// Nom/اللقب
-// Prénom /الاسم
-// Genre
-// E-mail / البريد الالكتروني
-// Téléphone / الهاتف
-// Wilaya / الولاية
-// Adresse / العنوان
-// Forme juridique/ الشكل القانوني
-// NIF (numéro d'identification fiscale)
-// Resultat

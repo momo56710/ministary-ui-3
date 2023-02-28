@@ -1,11 +1,11 @@
 import React from 'react';
 import axios from 'axios';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getSession } from '../../../components/utils/auth';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import activities from '../../../assets/data/activities';
-
+import TagInput from '../../assets/input';
 import {
   Text,
   Input,
@@ -16,47 +16,68 @@ import {
   Flex,
   Box,
   Center,
+  background,
+  color,
   Checkbox,
   useToast,
 } from '@chakra-ui/react';
 import { useMediaQuery } from '@chakra-ui/react';
 import NavBar from '../../../components/nav';
 import Wilaya from '../../../assets/data/wilaya';
-
+import { Stack, useColorModeValue } from '@chakra-ui/react';
 export default () => {
   const [isLargerThan800] = useMediaQuery('(min-width: 800px)');
   let [session, setSession] = useState('');
+  const text = useColorModeValue('dark', 'light');
   const options = Wilaya();
   const navigate = useNavigate();
   const [otherActivities, setOtherActivities] = useState([]);
+  const [fileName, setfileName] = useState([]);
+  const [coFounders, setCoFounders] = useState([]);
   const [payload, setPayload] = useState({});
-
+  const toast = useToast();
   const display = (other, display) => {
     other === 'Autre' || other === 'coFounder'
       ? (display = 'inline')
       : (display = 'none');
     return display;
   };
+  const handleTools = useCallback((event, tags) => {
+    setTools(tags);
+  }, []);
+  const handleIncubed = useCallback((event, tags) => {
+    setIncubed(tags);
+  }, []);
+  const handleCofounders = useCallback((event, tags) => {
+    setCoFounder(tags);
+  }, []);
   const [editable, setEditable] = useState(true);
   const [loading, setLoading] = useState(true);
   const [document, setDocument] = useState();
-  const [coFounder, setCoFounder] = useState();
-  const [fileName, setfileName] = useState([]);
+  const [coFounder, setCoFounder] = useState([]);
   const [visibale, setVisibale] = useState('none');
+  const [incubed, setIncubed] = useState([]);
+  const [tools, setTools] = useState([]);
   const { _id } = useParams();
-  const toast = useToast();
+
   useEffect(() => {
     session = getSession();
 
     axios
-      .get('https://api.stingo.vip/api/document/st/' + _id, {
+      .get('https://api.stingo.vip/api/document/in/' + _id, {
         headers: {
           Authorization: `Bearer ${session.token}`,
         },
       })
       .then(res => {
+        console.log(res)
+        
         setDocument(res.data.doc);
         setLoading(false);
+        setCoFounder([...res.data.doc.coFounders]);
+      
+        setTools([...res.data.doc.services]);
+        setIncubed([...res.data.doc.incubed_st]);
         setPayload(res.data.doc);
         setSession(getSession());
       });
@@ -73,7 +94,7 @@ export default () => {
         <Center>
           <Box w="80vw" h="100%" borderWidth="1px" borderRadius="lg">
             <Text fontSize="2xl" p={5} textAlign={'center'} fontWeight="bold">
-              Editer startup
+              Editer Label Icubateur
             </Text>
 
             <Box
@@ -104,9 +125,9 @@ export default () => {
                   Année
                 </Text>
                 <Input
-                  placeholder="20XX"
                   disabled={editable}
                   defaultValue={document.year}
+                  placeholder="20XX"
                   onChange={e => {
                     setPayload({ ...payload, year: e.target.value });
                   }}
@@ -115,27 +136,26 @@ export default () => {
                   Numero de label
                 </Text>
                 <Input
-                  defaultValue={document.num_label}
                   disabled={editable}
+                  defaultValue={document.num_label}
                   placeholder="XXXXXXXXX"
                   onChange={e => {
                     setPayload({ ...payload, num_label: e.target.value });
                   }}
                 />
                 <Text fontSize="xl" fontWeight="bold">
-                  Dénomination commerciale / الاسم التجاري
+                  Nom de l'incubateur / اسم الحاضنة
                 </Text>
                 <Input
                   disabled={editable}
-                  defaultValue={document.startup_name}
-                  placeholder="Dénomination commerciale"
-                  type={'text'}
+                  defaultValue={document.incubator_name}
+                  placeholder="Nom de l'incubateur"
                   onChange={e => {
-                    setPayload({ ...payload, startup_name: e.target.value });
+                    setPayload({ ...payload, incubator_name: e.target.value });
                   }}
                 />
                 <Text fontSize="xl" fontWeight="bold">
-                  Description courte du projet/ شرح مختصر للمشروع
+                  Description courte de l'incubateur / وصف موجز للحاضنة
                 </Text>
                 <Textarea
                   disabled={editable}
@@ -146,121 +166,60 @@ export default () => {
                   }}
                 />
                 <Text fontSize="xl" fontWeight="bold">
-                  Secteur d'activité / مجال العمل
+                  List des équipements et des services / قائمة المعدات والخدمات
                 </Text>
-                <Flex gap={4}>
-                  <Select
-                    value={otherActivities}
-                    disabled={editable}
-                    defaultValue={document.activity}
-                    onChange={e => {
-                      setPayload({ ...payload, activity: e.target.value });
-                      setOtherActivities(e.target.value);
-                    }}
-                  >
-                    {activities().map((val, i) => {
-                      return <option value={val}>{`${val}`}</option>;
-                    })}
-                    <option value="Autre">Autre</option>
-                  </Select>
-                  <Input
-                    onChange={e => {
-                      setPayload({ ...payload, activity: e.target.value });
-                    }}
-                    placeholder={otherActivities}
-                    display={e => display(otherActivities, display)}
-                  ></Input>
-                </Flex>
-                <Text fontSize="xl" fontWeight="bold">
-                  Avancement du projet / مدى تقدم المشروع
-                </Text>
-                <Select
+                <TagInput
                   disabled={editable}
-                  defaultValue={document.advancement}
-                  onChange={e => {
-                    setPayload({ ...payload, advancement: e.target.value });
-                  }}
-                >
-                  <option value={'Concept/Idée'}>Concept/Idée</option>
-                  <option value={'Prototype en dévloppement'}>
-                    Prototype en dévloppement
-                  </option>
-                  <option value={'Prototype prét'}>Prototype prét</option>
-                  <option value={'Produit sur le marché'}>
-                    Produit sur le marché
-                  </option>
-                </Select>
+                  placeholder={'List des équipements et des services'}
+                  tags={tools}
+                  colorScheme="teal"
+                  onTagsChange={handleTools}
+                />
                 <Text fontSize="xl" fontWeight="bold">
-                  Les qualifications scientifiques et techniques des fondateurs
-                  / المؤهلات العلمية والفنية للمؤسسين
+                  le plan d'aménagement de l'incubateur / المساحات المستعملة
                 </Text>
-
-                <Input
+                <Textarea
                   disabled={editable}
-                  defaultValue={document.qualifications}
-                  className="fileInput"
-                  placeholder="qualifications scientifiques et techniques"
+                  defaultValue={document.plan}
+                  placeholder="Description"
                   onChange={e => {
-                    setPayload({
-                      ...payload,
-                      qualifications: e.target.value,
-                    });
+                    setPayload({ ...payload, plan: e.target.value });
                   }}
                 />
-
                 <Text fontSize="xl" fontWeight="bold">
-                  Business Plan et présentation de la startup /خطة العمل وعرض
-                  الشركة الناشئة
+                  Présentation du programme d'incubation / برنامج الحضانة
                 </Text>
-
-                <Input
+                <Textarea
                   disabled={editable}
                   defaultValue={document.presentation}
-                  placeholder="Plan et présentation de la startup"
+                  placeholder="Présentation"
                   onChange={e => {
                     setPayload({ ...payload, presentation: e.target.value });
                   }}
                 />
-
                 <Text fontSize="xl" fontWeight="bold">
-                  Brevet (si il y en a) / براءة الاختراع ان وجدت
+                  Liste des statups incubées (si il y en a) / قائمة الشركات
+                  الناشئة المحتضنة (إن وجدت)
+                </Text>
+                <TagInput
+                  placeholder={'Liste des statups incubées'}
+                  tags={incubed}
+                  colorScheme="teal"
+                  onTagsChange={handleIncubed}
+                />
+                <Text fontSize="xl" fontWeight="bold">
+                  CV des fondateurs, et/ou formateurs / السير الذاتية للمؤسسين و
+                  / أو المدربين
                 </Text>
 
                 <Input
                   disabled={editable}
-                  defaultValue={document.certificate}
-                  placeholder="Brevet"
+                  defaultValue={document.cv}
+                  placeholder="link"
                   onChange={e => {
-                    setPayload({ ...payload, certificate: e.target.value });
+                    setPayload({ ...payload, cv: e.target.value });
                   }}
                 />
-
-                <Text fontSize="xl" fontWeight="bold">
-                  Concours/récompenses / الجوائز و المسابقات
-                </Text>
-
-                <Input
-                  disabled={editable}
-                  defaultValue={document.recompense}
-                  placeholder="récompenses"
-                  onChange={e => {
-                    setPayload({ ...payload, recompense: e.target.value });
-                  }}
-                />
-
-                <Text fontSize="xl" fontWeight="bold">
-                  Copie du registre de commerce / نسخة من السجل التجاري
-                </Text>
-
-                <Input
-                  disabled={editable}
-                  defaultValue={document.register}
-                  placeholder="registre de commerce"
-                  onChange={e => {
-                    setPayload({ ...payload, register: e.target.value });
-                  }}
-                />
-
                 <Text fontSize="xl" fontWeight="bold">
                   Nombre d'employés / عدد العمال
                 </Text>
@@ -271,17 +230,6 @@ export default () => {
                   placeholder="XX"
                   onChange={e => {
                     setPayload({ ...payload, num_employees: e.target.value });
-                  }}
-                />
-                <Text fontSize="xl" fontWeight="bold">
-                  Date de création / تاريخ الانشاء
-                </Text>
-                <Input
-                  disabled={editable}
-                  defaultValue={document.creation_date}
-                  type={'date'}
-                  onChange={e => {
-                    setPayload({ ...payload, creation_date: e.target.value });
                   }}
                 />
                 <Text fontSize="xl" fontWeight="bold">
@@ -318,33 +266,29 @@ export default () => {
                     setPayload({ ...payload, sex: e.target.value });
                   }}
                 >
-                  <option value="male">Homme</option>
+                  <option value="male" selected>
+                    Homme
+                  </option>
                   <option value="female">femme</option>
                 </Select>
                 <Text fontSize="xl" fontWeight="bold">
-                  E-mail / البريد الالكتروني
+                Autres co-fondateurs / المؤسسون الاخرون
                 </Text>
-
-                <Input
-                  disabled={editable}
-                  defaultValue={document.email}
-                  placeholder="email"
-                  onChange={e => {
-                    setPayload({ ...payload, email: e.target.value });
-                  }}
-                />
-
+                  <TagInput 
+                    placeholder={'Autres co-fondateurs / المؤسسون الاخرون'}
+                    tags={coFounder}
+                    colorScheme="teal"
+                    onTagsChange={handleCofounders}
+                  />
                 <Text fontSize="xl" fontWeight="bold">
-                  Téléphone / الهاتف
+                  Forme juridique/ الشكل القانوني
                 </Text>
-
                 <Input
                   disabled={editable}
-                  defaultValue={document.phone}
-                  placeholder="phone"
-                  type={'number'}
+                  defaultValue={document.juridic_status}
+                  placeholder="Forme juridique"
                   onChange={e => {
-                    setPayload({ ...payload, phone: e.target.value });
+                    setPayload({ ...payload, juridic_status: e.target.value });
                   }}
                 />
 
@@ -378,14 +322,40 @@ export default () => {
                   }}
                 />
                 <Text fontSize="xl" fontWeight="bold">
-                  Forme juridique/ الشكل القانوني
+                  E-mail / البريد الالكتروني
+                </Text>
+
+                <Input
+                  disabled={editable}
+                  defaultValue={document.email}
+                  placeholder="email"
+                  onChange={e => {
+                    setPayload({ ...payload, email: e.target.value });
+                  }}
+                />
+
+                <Text fontSize="xl" fontWeight="bold">
+                  Téléphone / الهاتف
+                </Text>
+
+                <Input
+                  disabled={editable}
+                  defaultValue={document.phone}
+                  placeholder="phone"
+                  type={'number'}
+                  onChange={e => {
+                    setPayload({ ...payload, phone: e.target.value });
+                  }}
+                />
+                <Text fontSize="xl" fontWeight="bold">
+                  Date de création / تاريخ الانشاء
                 </Text>
                 <Input
                   disabled={editable}
-                  defaultValue={document.juridic_status}
-                  placeholder="Forme juridique"
+                  defaultValue={document.creation_date}
+                  type={'date'}
                   onChange={e => {
-                    setPayload({ ...payload, juridic_status: e.target.value });
+                    setPayload({ ...payload, creation_date: e.target.value });
                   }}
                 />
                 <Text fontSize="xl" fontWeight="bold">
@@ -400,14 +370,39 @@ export default () => {
                   }}
                 />
                 <Text fontSize="xl" fontWeight="bold">
-                  Resultat
+                  Copie du registre de commerce / نسخة من السجل التجاري
                 </Text>
+
                 <Input
                   disabled={editable}
-                  defaultValue={document.result}
-                  placeholder="resultat"
+                  defaultValue={document.register}
+                  placeholder="link"
                   onChange={e => {
-                    setPayload({ ...payload, result: e.target.value });
+                    setPayload({ ...payload, register: e.target.value });
+                  }}
+                />
+                <Text fontSize="xl" fontWeight="bold">
+                  Copie des statuts de la societé / القـانون الأسـاسي لشـركة
+                </Text>
+
+                <Input
+                  disabled={editable}
+                  defaultValue={document.social_status}
+                  placeholder="link"
+                  onChange={e => {
+                    setPayload({ ...payload, social_status: e.target.value });
+                  }}
+                />
+                <Text fontSize="xl" fontWeight="bold">
+                  Agrément de l'association/fondation
+                </Text>
+
+                <Input
+                  disabled={editable}
+                  defaultValue={document.agreement}
+                  placeholder="link"
+                  onChange={e => {
+                    setPayload({ ...payload, agreement: e.target.value });
                   }}
                 />
                 <Text fontSize="xl" fontWeight="bold">
@@ -452,12 +447,11 @@ export default () => {
                   situation
                 </Text>
                 <Select
-                  defaultValue={document.status}
-                  disabled={editable}
-                  onChange={e => {
-                    setPayload({ ...payload, status: e.target.value });
-                  }}
-                >
+                defaultValue={document.status}
+                disabled={editable}
+                onChange={(e)=>{
+                  setPayload({ ...payload, status: e.target.value });
+                }}>
                   <option value="admis">admis</option>
                   <option value="pas admis">pas admis</option>
                   <option value="en attend">en attend</option>
@@ -468,19 +462,20 @@ export default () => {
                 <Input
                   disabled={editable}
                   defaultValue={document.other}
+                  placeholder=""
                   onChange={e => {
                     setPayload({ ...payload, other: e.target.value });
                   }}
                 />
                 <Button
-                  colorScheme="pink"
+                  colorScheme="pink" 
                   display={visibale}
                   size={'md'}
                   onClick={async () => {
-                    const s = { ...payload };
+                    const s = { ...payload ,services : tools,incubed_st:incubed,coFounders:coFounder};
                     delete s.__v;
                     try {
-                      // console.log({ ...payload, coFondateur: coFounder });
+                      console.log({ ...payload,  services : tools, coFounders:coFounder});
                       const res = await axios.post(
                         'https://api.stingo.vip/api/update',
                         s,
@@ -492,10 +487,11 @@ export default () => {
                       );
                       // console.log({ res });
                       if (res.data.success == true) {
-                        navigate('/service-label/startups');
+                        navigate('/service-label/incubateur');
+                        // console.log('hello');
                       } else {
                         toast({
-                          title: 'problem',
+                          title: 'probelm',
                           description: res.data.error,
                           status: 'error',
                           duration: 9000,
@@ -510,7 +506,7 @@ export default () => {
                   Edit
                 </Button>
                 <Button
-                  colorScheme="pink"
+                colorScheme="pink" 
                   display={visibale}
                   size={'md'}
                   onClick={async () => {
@@ -528,8 +524,16 @@ export default () => {
                       // console.log({ res });
                       // console.log(res.data.success);
                       if (res.data.success == true) {
-                        navigate('/service-label/startups');
-                        console.log('hello');
+                        navigate('/service-label/incubateur');
+                        // console.log('hello');
+                      } else {
+                        toast({
+                          title: 'probelm',
+                          description: res.data.error,
+                          status: 'error',
+                          duration: 9000,
+                          isClosable: true,
+                        });
                       }
                     } catch (error) {
                       // console.log(error);
@@ -538,17 +542,13 @@ export default () => {
                 >
                   delete
                 </Button>
+                <Button    onClick={() => {
+                    navigate(`/service-label/incubateur/make-pdf/${_id}`);
+                  }}colorScheme="teal"
+                >Download PDF</Button>
                 <Button
                   colorScheme="teal"
-                  onClick={() => {
-                    navigate(`/service-label/startups/make-pdf/${_id}`);
-                  }}
-                >
-                  Download PDF
-                </Button>
-                <Button
-                  colorScheme="teal"
-                  onClick={() => navigate('/service-label/startups')}
+                  onClick={() => navigate('/service-label/incubateur')}
                   size={'md'}
                 >
                   Return To Manager

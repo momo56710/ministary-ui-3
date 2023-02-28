@@ -1,15 +1,22 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Table from './assets/table';
 import NavBar from '../../../components/nav';
+import { useParams } from 'react-router-dom';
 import { getSession } from '../../../components/utils/auth';
 import { Center, Input, Heading, Button } from '@chakra-ui/react';
 import { ChevronRightIcon } from '@chakra-ui/icons';
+function useQuery(){
+  return new URLSearchParams(useLocation().search)
+}
 export default function App() {
+  const query = useQuery()
+  const searchQuery = query.get('searchQuery')
   const [session, setSession] = useState('');
   const [pageIndex, setPageIndex] = useState(1);
   let [loading, setLoading] = useState(true);
+  const [search,setSearch] = useState('')
   const navigate = useNavigate();
   const getItemsSlicedByIndex = (products, index) =>
     products.slice((index - 1) * 6, 6 * index);
@@ -22,6 +29,7 @@ export default function App() {
     if (!getSession()?.token) navigate('/login');
   });
   const [document, setDocument] = useState([]);
+  const { _id } = useParams();
   useEffect(() => {
     const session = getSession();
 
@@ -32,7 +40,7 @@ export default function App() {
         },
       })
       .then(res => {
-        setDocument(res.data.ST);
+        setDocument(res.data.IN);
         setLoading(false);
       })
       // .catch(err => console.log(err));
@@ -44,7 +52,7 @@ export default function App() {
   if (loading) return <h1>Loading ...</h1>;
   return (
     <>
-      <NavBar email={session.email} addBtn={'Ajouter Startups'}/>
+      <NavBar email={session.email} addBtn={'ajouter incubateur'}/>
       <Center>
         <Heading as="h2" size="3xl" marginBlock={4} textAlign={'center'}>
         </Heading>
@@ -55,10 +63,9 @@ export default function App() {
           size="lg"
           maxW={'80vw'}
           variant="filled"
-          onChange={e => {}}
+          onChange={e => {setSearch(e.target.value)}}
         />
       </Center>
-
       <Table clients={getItemsSlicedByIndex(document,pageIndex)} session={session}></Table>
       <Center mt={8}>
         <Button

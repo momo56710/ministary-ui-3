@@ -37,7 +37,7 @@ export default function App() {
         setDocument(res.data.PI);
         setLoading(false);
       })
-      .catch(err => console.log(err));
+      // .catch(err => console.log(err));
   }, []);
   useEffect(() => {
     if (!getSession()?.token) navigate('/login');
@@ -46,7 +46,6 @@ export default function App() {
   if (loading) return <h1>Loading ...</h1>;
   return (
     <>
-      {console.log(document)}
       <NavBar email={session.email} addBtn={'ajouter projet innovent'}/>
       <Center>
         <Heading as="h2" size="3xl" marginBlock={4} textAlign={'center'}>

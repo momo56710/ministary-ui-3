@@ -45,6 +45,7 @@ export default () => {
     last_name: '',
     sex: 'male',
     email: '',
+    status : 'admis',
     phone: '',
     website: '',
     project_name: '',
@@ -153,6 +154,7 @@ export default () => {
                     onChange={e => {
                       setPayload({ ...payload, role: e.target.value });
                       setCoFounders(e.target.value);
+                      console.log(coFounders)
                     }}
                   >
                     <option value="founder">fondateur</option>
@@ -368,7 +370,10 @@ export default () => {
                 <Text fontSize="xl" fontWeight="bold">
                   situation
                 </Text>
-                <Select>
+                <Select
+                onChange={(e)=>{
+                  setPayload({ ...payload, status: e.target.value });
+                }}>
                   <option value="admis">admis</option>
                   <option value="pas admis">pas admis</option>
                   <option value="en attend">en attend</option>
@@ -388,7 +393,7 @@ export default () => {
                   size={'md'}
                   onClick={async () => {
                     try {
-                      console.log({ ...payload, coFondateur: coFounder });
+                   
                       const res = await axios.post(
                         "https://api.stingo.vip/api/create",
                         { ...payload, coFounders: coFounder },
@@ -398,7 +403,7 @@ export default () => {
                           },
                         }
                       );
-                      console.log({ res });
+                     
                       if (res.data.success == true){
                         navigate('/service-label/projet-innovent')
                       }
@@ -412,7 +417,7 @@ export default () => {
                         });
                        }
                     } catch (error) {
-                      console.log(error);
+                      
                     }
                   }}
                  
@@ -421,6 +426,7 @@ export default () => {
                 </Button>
 
                 <Button
+                colorScheme='teal'
                   onClick={() => navigate('/service-label/projet-innovent')}
                   variant={'solid'}
                   size={'md'}

@@ -1,7 +1,10 @@
-import { useNavigate } from 'react-router-dom';
-import { useState, useCallback, useEffect } from 'react';
-import activities from '../../../assets/data/activities';
+import React from 'react';
 import axios from 'axios';
+import { useState, useEffect } from 'react';
+import { getSession } from '../../../components/utils/auth';
+import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import activities from '../../../assets/data/activities';
 
 import {
   Text,
@@ -13,75 +16,67 @@ import {
   Flex,
   Box,
   Center,
-  useMediaQuery,
+  Checkbox,
   useToast,
 } from '@chakra-ui/react';
-import { getSession } from '../../../components/utils/auth';
-import React from 'react';
+import { useMediaQuery } from '@chakra-ui/react';
 import NavBar from '../../../components/nav';
 import Wilaya from '../../../assets/data/wilaya';
+
 export default () => {
-  useEffect(() => {
-    if (!getSession()?.token) navigate('/login');
-    else setSession(getSession());
-  },[]);
-   const [isLargerThan800] = useMediaQuery('(min-width: 800px)');
-  const [session, setSession] = useState('');
-  const toast = useToast();
+  const [isLargerThan800] = useMediaQuery('(min-width: 800px)');
+  let [session, setSession] = useState('');
   const options = Wilaya();
   const navigate = useNavigate();
-  const [serials, setSerials] = useState([]);
-  const [fileName, setfileName] = useState([]);
   const [otherActivities, setOtherActivities] = useState([]);
-  const [payload, setPayload] = useState({
-    type: 'ST',
-    num_label: '',
-    year: '',
-    creation_date: '',
-    num_employees: '',
-    first_name: '',
-    last_name: '',
-    sex: 'male',
-    qualifications: '',
-    status : 'admis',
-    email: '',
-    phone: '',
-    startup_name: '',
-    activity: 'Fintech',
-    description: '',
-    juridic_status: '',
-    nif: '',
-    presentation: '',
-    register: '',
-    advancement: 'Concept/Idée',
-    certificate: '',
-    recompense: '',
-    state: 'adrar',
-    address: '',
-    result: '',
-    other: '',
-  });
-  const handleTagsChange = useCallback((event, tags) => {
-    setSerials(tags);
-  }, []);
+  const [payload, setPayload] = useState({});
+
 
   const display = (other, display) => {
-    other === 'Autre' ? (display = 'inline') : (display = 'none');
+    other === 'Autre' || other === 'coFounder'
+      ? (display = 'inline')
+      : (display = 'none');
     return display;
   };
+  const [editable, setEditable] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [document, setDocument] = useState();
+  const [coFounder, setCoFounder] = useState();
+  const [fileName, setfileName] = useState([]);
+  const [visibale, setVisibale] = useState('none');
+  const { _id } = useParams();
+  const toast = useToast();
   useEffect(() => {
-    if (!getSession()?.token) navigate('/login');
-    else setSession(getSession());
-  },[]);
+    session = getSession();
+
+    axios
+      .get('https://api.stingo.vip/api/document/st/' + _id, {
+        headers: {
+          Authorization: `Bearer ${session.token}`,
+        },
+      })
+      .then(res => {
+        setDocument(res.data.doc);
+        setLoading(false);
+        setPayload(res.data.doc);
+        setSession(getSession());
+      })
+      // .catch(err => console.log(err));
+  }, []);
+
+  if (loading) {
+    return <h1>Loading ...</h1>;
+  }
   return (
     <>
-      <NavBar email={session.email} d={'none'}/>
+      <NavBar email={session.email} d={'none'}></NavBar>
       <Box>
         <Center>
           <Box w="80vw" h="100%" borderWidth="1px" borderRadius="lg">
             <Text fontSize="2xl" p={5} textAlign={'center'} fontWeight="bold">
-              Ajouter Label Startup
+              Editer startup
             </Text>
+
             <Box
               w="100%"
               h="100%"
@@ -89,7 +84,20 @@ export default () => {
               borderTopRightRadius="lg"
               p={4}
             >
-               <Grid
+              <Checkbox
+                mb={8}
+                onChange={e => {
+                  e.target.checked ? setEditable(false) : setEditable(true);
+                  e.target.checked
+                    ? setVisibale('inline')
+                    : setVisibale('none');
+                }}
+              >
+                <Text fontSize="xl" fontWeight="bold">
+                  Edit
+                </Text>
+              </Checkbox>
+              <Grid
                 gap={6}
                 templateColumns={isLargerThan800 ? '1fr 3fr' : '1fr'}
               >
@@ -97,8 +105,9 @@ export default () => {
                   Année
                 </Text>
                 <Input
-                  type={'number'}
                   placeholder="20XX"
+                  disabled={editable}
+                  defaultValue={document.year}
                   onChange={e => {
                     setPayload({ ...payload, year: e.target.value });
                   }}
@@ -107,6 +116,8 @@ export default () => {
                   Numero de label
                 </Text>
                 <Input
+                  defaultValue={document.num_label}
+                  disabled={editable}
                   placeholder="XXXXXXXXX"
                   onChange={e => {
                     setPayload({ ...payload, num_label: e.target.value });
@@ -116,6 +127,8 @@ export default () => {
                   Dénomination commerciale / الاسم التجاري
                 </Text>
                 <Input
+                  disabled={editable}
+                  defaultValue={document.startup_name}
                   placeholder="Dénomination commerciale"
                   type={'text'}
                   onChange={e => {
@@ -126,6 +139,8 @@ export default () => {
                   Description courte du projet/ شرح مختصر للمشروع
                 </Text>
                 <Textarea
+                  disabled={editable}
+                  defaultValue={document.description}
                   placeholder="Description"
                   onChange={e => {
                     setPayload({ ...payload, description: e.target.value });
@@ -137,6 +152,8 @@ export default () => {
                 <Flex gap={4}>
                   <Select
                     value={otherActivities}
+                    disabled={editable}
+                    defaultValue={document.activity}
                     onChange={e => {
                       setPayload({ ...payload, activity: e.target.value });
                       setOtherActivities(e.target.value);
@@ -159,6 +176,8 @@ export default () => {
                   Avancement du projet / مدى تقدم المشروع
                 </Text>
                 <Select
+                  disabled={editable}
+                  defaultValue={document.advancement}
                   onChange={e => {
                     setPayload({ ...payload, advancement: e.target.value });
                   }}
@@ -178,6 +197,8 @@ export default () => {
                 </Text>
 
                 <Input
+                  disabled={editable}
+                  defaultValue={document.qualifications}
                   className="fileInput"
                   placeholder="qualifications scientifiques et techniques"
                   onChange={e => {
@@ -194,6 +215,8 @@ export default () => {
                 </Text>
 
                 <Input
+                  disabled={editable}
+                  defaultValue={document.presentation}
                   placeholder="Plan et présentation de la startup"
                   onChange={e => {
                     setPayload({ ...payload, presentation: e.target.value });
@@ -205,6 +228,8 @@ export default () => {
                 </Text>
 
                 <Input
+                  disabled={editable}
+                  defaultValue={document.certificate}
                   placeholder="Brevet"
                   onChange={e => {
                     setPayload({ ...payload, certificate: e.target.value });
@@ -216,6 +241,8 @@ export default () => {
                 </Text>
 
                 <Input
+                  disabled={editable}
+                  defaultValue={document.recompense}
                   placeholder="récompenses"
                   onChange={e => {
                     setPayload({ ...payload, recompense: e.target.value });
@@ -227,6 +254,8 @@ export default () => {
                 </Text>
 
                 <Input
+                  disabled={editable}
+                  defaultValue={document.register}
                   placeholder="registre de commerce"
                   onChange={e => {
                     setPayload({ ...payload, register: e.target.value });
@@ -237,6 +266,8 @@ export default () => {
                   Nombre d'employés / عدد العمال
                 </Text>
                 <Input
+                  disabled={editable}
+                  defaultValue={document.num_employees}
                   type={'number'}
                   placeholder="XX"
                   onChange={e => {
@@ -247,6 +278,8 @@ export default () => {
                   Date de création / تاريخ الانشاء
                 </Text>
                 <Input
+                  disabled={editable}
+                  defaultValue={document.creation_date}
                   type={'date'}
                   onChange={e => {
                     setPayload({ ...payload, creation_date: e.target.value });
@@ -256,6 +289,8 @@ export default () => {
                   Nom/اللقب
                 </Text>
                 <Input
+                  disabled={editable}
+                  defaultValue={document.last_name}
                   placeholder="Nom"
                   type={'text'}
                   onChange={e => {
@@ -266,6 +301,8 @@ export default () => {
                   Prénom /الاسم
                 </Text>
                 <Input
+                  disabled={editable}
+                  defaultValue={document.first_name}
                   placeholder="Prenom"
                   onChange={e => {
                     setPayload({ ...payload, first_name: e.target.value });
@@ -275,6 +312,8 @@ export default () => {
                   Genre
                 </Text>
                 <Select
+                  disabled={editable}
+                  defaultValue={document.sex}
                   placeholder=""
                   onChange={e => {
                     setPayload({ ...payload, sex: e.target.value });
@@ -288,6 +327,8 @@ export default () => {
                 </Text>
 
                 <Input
+                  disabled={editable}
+                  defaultValue={document.email}
                   placeholder="email"
                   onChange={e => {
                     setPayload({ ...payload, email: e.target.value });
@@ -299,6 +340,8 @@ export default () => {
                 </Text>
 
                 <Input
+                  disabled={editable}
+                  defaultValue={document.phone}
                   placeholder="phone"
                   type={'number'}
                   onChange={e => {
@@ -310,6 +353,8 @@ export default () => {
                   Wilaya / الولاية
                 </Text>
                 <Select
+                  disabled={editable}
+                  defaultValue={document.state}
                   onChange={e => {
                     setPayload({ ...payload, state: e.target.value });
                   }}
@@ -326,6 +371,8 @@ export default () => {
                   Adresse / العنوان
                 </Text>
                 <Input
+                  disabled={editable}
+                  defaultValue={document.address}
                   placeholder="Adresse"
                   onChange={e => {
                     setPayload({ ...payload, address: e.target.value });
@@ -335,6 +382,8 @@ export default () => {
                   Forme juridique/ الشكل القانوني
                 </Text>
                 <Input
+                  disabled={editable}
+                  defaultValue={document.juridic_status}
                   placeholder="Forme juridique"
                   onChange={e => {
                     setPayload({ ...payload, juridic_status: e.target.value });
@@ -344,6 +393,8 @@ export default () => {
                   NIF (numéro d'identification fiscale)
                 </Text>
                 <Input
+                  disabled={editable}
+                  defaultValue={document.nif}
                   placeholder="nif"
                   onChange={e => {
                     setPayload({ ...payload, nif: e.target.value });
@@ -353,6 +404,8 @@ export default () => {
                   Resultat
                 </Text>
                 <Input
+                  disabled={editable}
+                  defaultValue={document.result}
                   placeholder="resultat"
                   onChange={e => {
                     setPayload({ ...payload, result: e.target.value });
@@ -397,34 +450,26 @@ export default () => {
                   />
                 </Grid>
                 <Text fontSize="xl" fontWeight="bold">
-                  situation
-                </Text>
-                <Select
-                onChange={(e)=>{
-                  setPayload({ ...payload, status: e.target.value });
-                }}>
-                  <option value="admis">admis</option>
-                  <option value="pas admis">pas admis</option>
-                  <option value="en attend">en attend</option>
-                </Select>
-                <Text fontSize="xl" fontWeight="bold">
                   Autre
                 </Text>
                 <Input
-                  placeholder=""
+                  disabled={editable}
+                  defaultValue={document.other}
                   onChange={e => {
                     setPayload({ ...payload, other: e.target.value });
                   }}
                 />
                 <Button
-                  colorScheme={'teal'}
+                  display={visibale}
                   size={'md'}
                   onClick={async () => {
+                    const s = { ...payload };
+                    delete s.__v;
                     try {
-                      // console.log({ ...payload });
+                      // console.log({ ...payload, coFondateur: coFounder });
                       const res = await axios.post(
-                        "https://api.stingo.vip/api/create",
-                        { ...payload },
+                        'https://api.stingo.vip/api/update',
+                        s,
                         {
                           headers: {
                             Authorization: `Bearer ${session.token}`,
@@ -432,10 +477,9 @@ export default () => {
                         }
                       );
                       // console.log({ res });
-                      if (res.data.success == true){
-                        navigate('/service-label/startups')
-                      }
-                      else{
+                      if (res.data.success == true) {
+                        navigate('/service-label/startups');
+                      } else {
                         toast({
                           title: 'probelm',
                           description: res.data.error,
@@ -449,12 +493,39 @@ export default () => {
                     }
                   }}
                 >
-                  Add
+                  Edit
                 </Button>
                 <Button
-                colorScheme='teal'
+                  display={visibale}
+                  size={'md'}
+                  onClick={async () => {
+                    try {
+                      // console.log({ ...payload, coFondateur: coFounder });
+                      const res = await axios.post(
+                        'https://api.stingo.vip/api/delete',
+                        { type: document.type, _id: document._id },
+                        {
+                          headers: {
+                            Authorization: `Bearer ${session.token}`,
+                          },
+                        }
+                      );
+                      // console.log({ res });
+                      // console.log(res.data.success);
+                      if (res.data.success == true) {
+                        navigate('/service-label/startups');
+                        console.log('hello');
+                      } 
+                    } catch (error) {
+                      // console.log(error);
+                    }
+                  }}
+                >
+                  delete
+                </Button>
+                <Button colorScheme={'red'}>Download PDF</Button>
+                <Button
                   onClick={() => navigate('/service-label/startups')}
-                  variant={'solid'}
                   size={'md'}
                 >
                   Return To Manager
@@ -467,26 +538,3 @@ export default () => {
     </>
   );
 };
-// Annee
-// Numero de label
-// Dénomination commerciale / الاسم التجاري
-// Description courte du projet/ شرح مختصر للمشروع
-// Secteur d'activité / مجال العمل
-// Avancement du projet / مدى تقدم المشروع
-// Les qualifications scientifiques et techniques des fondateurs / المؤهلات العلمية والفنية للمؤسسين
-// Business Plan et présentation de la startup /خطة العمل وعرض الشركة الناشئة
-// Brevet (si il y en a) / براءة الاختراع ان وجدت
-// Concours/récompenses /  الجوائز و المسابقات
-// Copie du registre de commerce / نسخة من السجل التجاري
-// Nombre d'employés / عدد العمال
-// Date de création / تاريخ الانشاء
-// Nom/اللقب
-// Prénom /الاسم
-// Genre
-// E-mail / البريد الالكتروني
-// Téléphone / الهاتف
-// Wilaya / الولاية
-// Adresse / العنوان
-// Forme juridique/ الشكل القانوني
-// NIF (numéro d'identification fiscale)
-// Resultat

@@ -43,7 +43,6 @@ export default () => {
     last_name: '',
     sex: 'male',
     qualifications: '',
-    status : 'admis',
     email: '',
     phone: '',
     startup_name: '',
@@ -397,17 +396,6 @@ export default () => {
                   />
                 </Grid>
                 <Text fontSize="xl" fontWeight="bold">
-                  situation
-                </Text>
-                <Select
-                onChange={(e)=>{
-                  setPayload({ ...payload, status: e.target.value });
-                }}>
-                  <option value="admis">admis</option>
-                  <option value="pas admis">pas admis</option>
-                  <option value="en attend">en attend</option>
-                </Select>
-                <Text fontSize="xl" fontWeight="bold">
                   Autre
                 </Text>
                 <Input
@@ -417,42 +405,42 @@ export default () => {
                   }}
                 />
                 <Button
+                  variant={'solid'}
                   colorScheme={'teal'}
                   size={'md'}
-                  onClick={async () => {
-                    try {
-                      // console.log({ ...payload });
-                      const res = await axios.post(
-                        "https://api.stingo.vip/api/create",
-                        { ...payload },
-                        {
-                          headers: {
-                            Authorization: `Bearer ${session.token}`,
-                          },
-                        }
-                      );
-                      // console.log({ res });
-                      if (res.data.success == true){
-                        navigate('/service-label/startups')
-                      }
-                      else{
-                        toast({
-                          title: 'probelm',
-                          description: res.data.error,
-                          status: 'error',
-                          duration: 9000,
-                          isClosable: true,
-                        });
-                      }
-                    } catch (error) {
-                      // console.log(error);
-                    }
-                  }}
+                  // onClick={async () => {
+                  //   try {
+                  //     // console.log({ ...payload });
+                  //     const res = await axios.post(
+                  //       "https://api.stingo.vip/api/create",
+                  //       { ...payload },
+                  //       {
+                  //         headers: {
+                  //           Authorization: `Bearer ${session.token}`,
+                  //         },
+                  //       }
+                  //     );
+                  //     // console.log({ res });
+                  //     if (res.data.success == true){
+                  //       navigate('/service-label/startups')
+                  //     }
+                  //     else{
+                  //       toast({
+                  //         title: 'probelm',
+                  //         description: res.data.error,
+                  //         status: 'error',
+                  //         duration: 9000,
+                  //         isClosable: true,
+                  //       });
+                  //     }
+                  //   } catch (error) {
+                  //     // console.log(error);
+                  //   }
+                  // }}
                 >
                   Add
                 </Button>
                 <Button
-                colorScheme='teal'
                   onClick={() => navigate('/service-label/startups')}
                   variant={'solid'}
                   size={'md'}

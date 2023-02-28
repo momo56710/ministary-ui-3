@@ -4,7 +4,9 @@ import Chart from './assets/chart';
 import Card from './assets/card';
 import { useEffect , useState} from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import { getSession } from '../components/utils/auth';
+
 import { Box, Grid, Text , Center} from '@chakra-ui/react';
 import axios from 'axios';
 
@@ -15,34 +17,32 @@ function Home() {
   const [documentST, setDocumentST] = useState([]);
   const [documentIN, setDocumentIN] = useState([]);
   let [loading, setLoading] = useState(true);
-  useEffect(() => {
-    const session = getSession();
+  // useEffect(() => {
+  //   const session = getSession();
 
-    axios
-      .get('https://api.stingo.vip/api/list', {
-        headers: {
-          Authorization: `Bearer ${session.token}`,
-        },
-      })
-      .then(res => {
-        setDocumentPI(res.data.PI);
-        setDocumentST(res.data.ST);
-        setDocumentIN(res.data.IN);
-        setLoading(false);
-      })
-  }, []);
+  //   axios
+  //     .get('https://api.stingo.vip/api/list', {
+  //       headers: {
+  //         Authorization: `Bearer ${session.token}`,
+  //       },
+  //     })
+  //     .then(res => {
+  //       setDocumentPI(res.data.PI);
+  //       setDocumentST(res.data.ST);
+  //       setDocumentIN(res.data.IN);
+  //       setLoading(false);
+  //     })
+  // }, []);
   useEffect(() => {
     if (!getSession()?.token) navigate('/login');
     else setSession(getSession());
   },[]);
   return (
     <>
-    
       <NavBar email={session.email} d={'none'} />
-      <Center><Text fontSize={'2em'} mb={8} fontWeight={'bold'}>Service Label</Text></Center>
+      <Center><Text fontSize={'2em'} mb={8} fontWeight={'bold'}>Comite de labilisation</Text></Center>
       <Grid
         gap={8}
-        mx={'4em'}
         gridTemplateColumns={'repeat(auto-fit, 300px)'}
         justifyContent={'space-around'}
       >

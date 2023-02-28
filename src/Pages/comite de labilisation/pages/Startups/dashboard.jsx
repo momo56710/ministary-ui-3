@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Table from './assets/table';
+
 import NavBar from '../../../components/nav';
 import { getSession } from '../../../components/utils/auth';
 import { Center, Input, Heading, Button } from '@chakra-ui/react';
 import { ChevronRightIcon } from '@chakra-ui/icons';
+import client from './assets/client';
 export default function App() {
   const [session, setSession] = useState('');
   const [pageIndex, setPageIndex] = useState(1);
@@ -22,26 +24,26 @@ export default function App() {
     if (!getSession()?.token) navigate('/login');
   });
   const [document, setDocument] = useState([]);
-  useEffect(() => {
-    const session = getSession();
+  // useEffect(() => {
+  //   const session = getSession();
 
-    axios
-      .get('https://api.stingo.vip/api/list', {
-        headers: {
-          Authorization: `Bearer ${session.token}`,
-        },
-      })
-      .then(res => {
-        setDocument(res.data.ST);
-        setLoading(false);
-      })
-      // .catch(err => console.log(err));
-  }, []);
+  //   axios
+  //     .get('https://api.stingo.vip/api/list', {
+  //       headers: {
+  //         Authorization: `Bearer ${session.token}`,
+  //       },
+  //     })
+  //     .then(res => {
+  //       setDocument(res.data.ST);
+  //       setLoading(false);
+  //     })
+  //     // .catch(err => console.log(err));
+  // }, []);
   useEffect(() => {
     if (!getSession()?.token) navigate('/login');
     else setSession(getSession());
   },[]);
-  if (loading) return <h1>Loading ...</h1>;
+  // if (loading) return <h1>Loading ...</h1>;
   return (
     <>
       <NavBar email={session.email} addBtn={'Ajouter Startups'}/>
@@ -59,7 +61,7 @@ export default function App() {
         />
       </Center>
 
-      <Table clients={getItemsSlicedByIndex(document,pageIndex)} session={session}></Table>
+      <Table clients={getItemsSlicedByIndex(client(),pageIndex)} session={session}></Table>
       <Center mt={8}>
         <Button
           mr={4}

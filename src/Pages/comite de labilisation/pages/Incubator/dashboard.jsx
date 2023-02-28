@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Table from './assets/table';
 import NavBar from '../../../components/nav';
+import { useParams } from 'react-router-dom';
+import client from './assets/client'
 import { getSession } from '../../../components/utils/auth';
 import { Center, Input, Heading, Button } from '@chakra-ui/react';
 import { ChevronRightIcon } from '@chakra-ui/icons';
@@ -22,29 +24,29 @@ export default function App() {
     if (!getSession()?.token) navigate('/login');
   });
   const [document, setDocument] = useState([]);
-  useEffect(() => {
-    const session = getSession();
+  // useEffect(() => {
+  //   const session = getSession();
 
-    axios
-      .get('https://api.stingo.vip/api/list', {
-        headers: {
-          Authorization: `Bearer ${session.token}`,
-        },
-      })
-      .then(res => {
-        setDocument(res.data.ST);
-        setLoading(false);
-      })
-      // .catch(err => console.log(err));
-  }, []);
+  //   axios
+  //     .get('https://api.stingo.vip/api/list', {
+  //       headers: {
+  //         Authorization: `Bearer ${session.token}`,
+  //       },
+  //     })
+  //     .then(res => {
+  //       setDocument(res.data.IN);
+  //       setLoading(false);
+  //     })
+  //     // .catch(err => console.log(err));
+  // }, []);
   useEffect(() => {
     if (!getSession()?.token) navigate('/login');
     else setSession(getSession());
   },[]);
-  if (loading) return <h1>Loading ...</h1>;
+  // if (loading) return <h1>Loading ...</h1>;
   return (
     <>
-      <NavBar email={session.email} addBtn={'Ajouter Startups'}/>
+      <NavBar email={session.email} addBtn={'ajouter incubateur'}/>
       <Center>
         <Heading as="h2" size="3xl" marginBlock={4} textAlign={'center'}>
         </Heading>
@@ -59,7 +61,7 @@ export default function App() {
         />
       </Center>
 
-      <Table clients={getItemsSlicedByIndex(document,pageIndex)} session={session}></Table>
+      <Table clients={getItemsSlicedByIndex(client(),pageIndex)} session={session}></Table>
       <Center mt={8}>
         <Button
           mr={4}
