@@ -50,7 +50,7 @@ function Pdf() {
     <NavBar email={session.email} d={'none'}/>
       <div ref={pdfTable}>
         <Text fontSize={'2em'} fontWeight={'bold'} textAlign={'center'} my={8}>
-          label startup
+          label Startup
         </Text>
 
         <Table w={'70vw'} m={'auto'}>

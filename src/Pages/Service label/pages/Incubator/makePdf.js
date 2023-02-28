@@ -69,7 +69,7 @@ function Pdf() {
     <NavBar email={session.email} d={'none'}/>
       <div ref={pdfTable}>
         <Text fontSize={'2em'} fontWeight={'bold'} textAlign={'center'} my={8}>
-        Label Icubateur
+        Label Incubateur
         </Text>
 
         <Table w={'70vw'} m={'auto'}>
