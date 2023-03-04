@@ -24,14 +24,15 @@ export default () => {
   useEffect(() => {
     if (!getSession()?.token) navigate('/login');
     else setSession(getSession());
-  },[]);
-   const [isLargerThan800] = useMediaQuery('(min-width: 800px)');
+  }, []);
+  const [isLargerThan800] = useMediaQuery('(min-width: 800px)');
   const [session, setSession] = useState('');
   const toast = useToast();
   const options = Wilaya();
   const navigate = useNavigate();
   const [serials, setSerials] = useState([]);
-  const [fileName, setfileName] = useState([]);
+  const [fileName, setFileName] = useState([]);
+  const [file, setFile] = useState([]);
   const [otherActivities, setOtherActivities] = useState([]);
   const [payload, setPayload] = useState({
     type: 'ST',
@@ -43,7 +44,7 @@ export default () => {
     last_name: '',
     sex: 'male',
     qualifications: '',
-    status : 'admis',
+    status: 'admis',
     email: '',
     phone: '',
     startup_name: '',
@@ -72,10 +73,10 @@ export default () => {
   useEffect(() => {
     if (!getSession()?.token) navigate('/login');
     else setSession(getSession());
-  },[]);
+  }, []);
   return (
     <>
-      <NavBar email={session.email} d={'none'}/>
+      <NavBar email={session.email} d={'none'} />
       <Box>
         <Center>
           <Box w="80vw" h="100%" borderWidth="1px" borderRadius="lg">
@@ -89,7 +90,7 @@ export default () => {
               borderTopRightRadius="lg"
               p={4}
             >
-               <Grid
+              <Grid
                 gap={6}
                 templateColumns={isLargerThan800 ? '1fr 3fr' : '1fr'}
               >
@@ -358,7 +359,7 @@ export default () => {
                     setPayload({ ...payload, result: e.target.value });
                   }}
                 />
-                 <Text fontSize="xl" fontWeight="bold">
+                <Text fontSize="xl" fontWeight="bold">
                   label(PDF)
                 </Text>
                 <Grid
@@ -385,7 +386,8 @@ export default () => {
                       type={'file'}
                       pt={'0.3em'}
                       onChange={e => {
-                        setfileName(e.target.value);
+                        setFileName(e.target.value);
+                        setFile(e.target.files[0]);
                       }}
                     />
                   </label>
@@ -400,9 +402,10 @@ export default () => {
                   situation
                 </Text>
                 <Select
-                onChange={(e)=>{
-                  setPayload({ ...payload, status: e.target.value });
-                }}>
+                  onChange={e => {
+                    setPayload({ ...payload, status: e.target.value });
+                  }}
+                >
                   <option value="admis">admis</option>
                   <option value="pas admis">pas admis</option>
                   <option value="en attend">en attend</option>
@@ -421,10 +424,26 @@ export default () => {
                   size={'md'}
                   onClick={async () => {
                     try {
-                      // console.log({ ...payload });
+                      let data = new FormData();
+                      data.append('upload-pdf', file);
+                      const { data: fileUid } = await axios.post(
+                        'https://api.stingo.vip/api/upload-file',
+                        data
+                        
+                      );
+                      if(!fileUid ){
+                        toast({
+                          title: 'error',
+                          description: 'Adding file faild',
+                          status: 'error',
+                          duration: 9000,
+                          isClosable: true,
+                        });
+                      }
+                      console.log({ ...payload,pdf:fileUid });
                       const res = await axios.post(
-                        "https://api.stingo.vip/api/create",
-                        { ...payload },
+                        'https://api.stingo.vip/api/create',
+                        { ...payload,pdf:fileUid },
                         {
                           headers: {
                             Authorization: `Bearer ${session.token}`,
@@ -432,13 +451,12 @@ export default () => {
                         }
                       );
                       // console.log({ res });
-                      if (res.data.success == true){
-                        navigate('/service-label/startups')
-                      }
-                      else{
+                      if (res.data.success == true) {
+                        navigate('/service-label/startups');
+                      } else {
                         toast({
-                          title: 'probelm',
-                          description: res.data.error,
+                          title: 'error',
+                          description: res.data.error || res.data.message,
                           status: 'error',
                           duration: 9000,
                           isClosable: true,
@@ -452,7 +470,7 @@ export default () => {
                   Add
                 </Button>
                 <Button
-                colorScheme='teal'
+                  colorScheme="teal"
                   onClick={() => navigate('/service-label/startups')}
                   variant={'solid'}
                   size={'md'}

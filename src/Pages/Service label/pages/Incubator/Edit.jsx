@@ -528,8 +528,8 @@ export default () => {
                         // console.log('hello');
                       } else {
                         toast({
-                          title: 'probelm',
-                          description: res.data.error,
+                          title: 'error',
+                          description: res.data.error || res.data.message,
                           status: 'error',
                           duration: 9000,
                           isClosable: true,

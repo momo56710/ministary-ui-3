@@ -17,51 +17,115 @@ export default ({ clients }) => {
       <Table variant="simple" maxW={'80vw'} m={'auto'}>
         <Thead>
           <Tr>
-            <Th>
-              <Center>Numero de label</Center>
-            </Th>
-            <Th>
-              <Center> Année</Center>
-            </Th>
-            <Th>
-              <Center>Nom</Center>
-            </Th>
-            <Th>
-              <Center>Prenom</Center>
-            </Th>
-
-            <Th>
-              <Center>Wilaya</Center>
-            </Th>
-            <Th>
-              <Center>Situation</Center>
-            </Th>
-            <Th>
-              <Center>Actions</Center>
-            </Th>
+            <Th> Année</Th>
+            <Th>Numero de label</Th>
+            <Th>Nom</Th>
+            <Th>Prénom</Th>
+            <Th>Genre</Th>
+            <Th>Vous êtes</Th>
+            <Th>Autres co-fondateurs</Th>
+            <Th>E-mail</Th>
+            <Th>Téléphone</Th>
+            <Th>Site Web</Th>
+            <Th>Nom du projet</Th>
+            <Th> Description courte du projet</Th>
+            <Th>Secteur d'activité</Th>
+            <Th> Avancement du projet</Th>
+            <Th> Brevet</Th>
+            <Th> Concours/récompenses</Th>
+            <Th>Wilaya</Th>
+            <Th>Adresse</Th>
+            <Th>label(PDF)</Th>
+            <Th>situation</Th>
+            <Th>Autre</Th>
+            <Th>Actions</Th>
           </Tr>
         </Thead>
         <Tbody>
           {clients.map((cli, i) => (
             <Tr>
-              <Td>
-                <Center>{cli.num_label}</Center>
+              <Td overflowX={'scroll'} maxW={'15em'}>
+                {cli.year}
               </Td>
-              <Td>
-                <Center>{cli.year}</Center>
+
+              <Td overflowX={'scroll'} maxW={'15em'}>
+                {cli.num_label}
               </Td>
-              <Td>
-                <Center>{cli.first_name}</Center>
+
+              <Td overflowX={'scroll'} maxW={'15em'}>
+                {cli.last_name}
               </Td>
-              <Td>
-                <Center>{cli.last_name}</Center>
+
+              <Td overflowX={'scroll'} maxW={'15em'}>
+                {cli.first_name}
               </Td>
-              <Td>
-                <Center>{cli.state}</Center>
+
+              <Td overflowX={'scroll'} maxW={'15em'}>
+                {cli.sex}
               </Td>
-              <Td>
-                <Center>{cli.status}</Center>
+
+              <Td overflowX={'scroll'} maxW={'15em'}>
+                {cli.role}
               </Td>
+
+              <Td overflowX={'scroll'} maxW={'15em'}>
+                {[...cli.coFounders].join(', ')}
+              </Td>
+
+              <Td overflowX={'scroll'} maxW={'15em'}>
+                {cli.email}
+              </Td>
+
+              <Td overflowX={'scroll'} maxW={'15em'}>
+                {cli.phone}
+              </Td>
+
+              <Td overflowX={'scroll'} maxW={'15em'}>
+                {cli.website}
+              </Td>
+
+              <Td overflowX={'scroll'} maxW={'15em'}>
+                {cli.project_name}
+              </Td>
+
+              <Td overflowX={'scroll'} maxW={'15em'}>
+                {cli.description}
+              </Td>
+
+              <Td overflowX={'scroll'} maxW={'15em'}>
+                {cli.activity}
+              </Td>
+
+              <Td overflowX={'scroll'} maxW={'15em'}>
+                {cli.advancement}
+              </Td>
+
+              <Td overflowX={'scroll'} maxW={'15em'}>
+                {cli.certificate}
+              </Td>
+
+              <Td overflowX={'scroll'} maxW={'15em'}>
+                {cli.recompense}
+              </Td>
+
+              <Td overflowX={'scroll'} maxW={'15em'}>
+                {cli.state}
+              </Td>
+
+              <Td overflowX={'scroll'} maxW={'15em'}>
+                {cli.address}
+              </Td>
+
+              <Td overflowX={'scroll'} maxW={'15em'}></Td>
+
+              <Td overflowX={'scroll'} maxW={'15em'}>
+                {cli.status}
+              </Td>
+
+              <Td overflowX={'scroll'} maxW={'15em'}>
+                {cli.other}
+              </Td>
+
               <Td>
                 <Center gap={4}>
                   <Button
@@ -69,17 +133,17 @@ export default ({ clients }) => {
                       navigate(`edit/${cli._id}`);
                     }}
                   >
-                    Voir plus
+                    Edit
                   </Button>
                   <Button
-                  onClick={() => {
-                    navigate(`make-pdf/${cli._id}`);
-                  }}
-                  >Download PDF</Button>
+                    onClick={() => {
+                      navigate(`make-pdf/${cli._id}`);
+                    }}
+                  >
+                    Download PDF
+                  </Button>
                 </Center>
               </Td>
-
-             
             </Tr>
           ))}
         </Tbody>

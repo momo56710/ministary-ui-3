@@ -359,48 +359,16 @@ export default () => {
                   situation
                 </Text>
                 <Select>
-                  <option value="admis">admis</option>
-                  <option value="pas admis">pas admis</option>
-                  <option value="en attend">en attend</option>
+                  <option value="admis">prototype non mature</option>
+                  <option value="pas admis">prototype non fourni</option>
+                  <option value="en attend"> le projet ne presente aucun aspect d innovation</option>
+                  <option value="en attend"> Manque de business plan</option>
+                  <option value="en attend"> Manque de business model</option>
+                  <option value="en attend"> Manque de registre du commerce</option>
+                  <option value="en attend"> le debut d activite depasse les 8 ans</option>
+
                 </Select>
-                <Text fontSize="xl" fontWeight="bold">
-                  label(PDF)
-                </Text>
-                <Grid
-                  gap={2}
-                  templateColumns={isLargerThan800 ? '1fr 3fr' : '1fr'}
-                >
-                  <label
-                    for="pdf"
-                    style={{
-                      borderRadius: '5px',
-                      padding: '0.5em 0',
-                      border: '1px solid rgba(200,200,200,0.4)',
-                      cursor: 'pointer',
-                      display: 'grid',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    Import
-                    <Input
-                      id="pdf"
-                      display={'none'}
-                      placeholder="Upload"
-                      type={'file'}
-                      pt={'0.3em'}
-                      onChange={e => {
-                        setfileName(e.target.value);
-                      }}
-                    />
-                  </label>
-                  <Input
-                    type="text"
-                    readOnly
-                    textAlign={'center'}
-                    value={fileName.toString().substring(12, 1000)}
-                  />
-                </Grid>
+               
                 <Text fontSize="xl" fontWeight="bold">
                   Autre
                 </Text>

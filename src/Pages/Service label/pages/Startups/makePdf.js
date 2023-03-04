@@ -9,7 +9,7 @@ import { useNavigate, useParams } from 'react-router';
 import axios from 'axios';
 import { Text, Td, Tr, Th, Table, Button, Center } from '@chakra-ui/react';
 function Pdf() {
-    const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const pdfTable = useRef();
   let [session, setSession] = useState('');
   const [payload, setPayload] = useState({});
@@ -47,7 +47,7 @@ function Pdf() {
 
   return (
     <>
-    <NavBar email={session.email} d={'none'}/>
+      <NavBar email={session.email} d={'none'} />
       <div ref={pdfTable}>
         <Text fontSize={'2em'} fontWeight={'bold'} textAlign={'center'} my={8}>
           label Startup
@@ -79,10 +79,7 @@ function Pdf() {
             <Td>{document.advancement}</Td>
           </Tr>
           <Tr>
-            <Th>
-              {' '}
-              Les qualifications scientifiques et techniques des fondateurs
-            </Th>
+            <Th>Les qualifications scientifiques et techniques des fondateurs</Th>
             <Td>{document.qualifications}</Td>
           </Tr>
           <Tr>
@@ -175,7 +172,7 @@ function Pdf() {
         <Button
           my={8}
           onClick={() => {
-            navigate('/service-label/startups')
+            navigate('/service-label/startups');
           }}
         >
           Return

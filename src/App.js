@@ -1,4 +1,5 @@
 import React from 'react';
+import './Pages/components/css/scroll.css'
 import {
   ChakraProvider,
   theme,
@@ -29,6 +30,8 @@ import AddUser from './Pages/addUser';
 import PdfSt from './Pages/Service label/pages/Startups/makePdf';
 import PdfPI from './Pages/Service label/pages/Projet Innovent/makePdf';
 import PdfIN from './Pages/Service label/pages/Incubator/makePdf';
+import ConvertXlsx from './Pages/comite de labilisation/pages/convertXlsx';
+
 function App() {
   return (
     <ChakraProvider theme={theme}>
@@ -36,6 +39,7 @@ function App() {
         <Routes>
           {/*service label links*/}
           <Route path="/comite-de-labilisation" element={<HomeCL />} />
+          <Route path="/xlsx" element={<ConvertXlsx />} />
           <Route path="/service-label" element={<HomeSL />} />
           <Route path="/service-label/projet-innovent" element={<DashboardPISL/>} />
           <Route path="/service-label/projet-innovent/create" element={<AddPISL/>} />
